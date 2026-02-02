@@ -487,7 +487,7 @@ export function MapPage() {
           {/* 좌측 하단 범례 */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
             {[
-              { color: "#A4FF04", label: "전기차" },
+              { color: "#55D400", label: "전기차" },
               { color: "#FCA5A5", label: "임산부" },
               { color: "#93C5FD", label: "장애인" },
               { color: "#E9D5FF", label: "경차" },
