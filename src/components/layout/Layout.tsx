@@ -13,7 +13,9 @@ export function Layout({ children }: LayoutProps) {
         <Aside />
         <div className="flex flex-col flex-1 overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-auto bg-accent p-6">{children}</main>
+          <main className="flex-1 overflow-auto bg-background p-6">
+            {children}
+          </main>
         </div>
       </div>
     </TooltipProvider>

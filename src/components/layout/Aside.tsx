@@ -67,7 +67,7 @@ export function Aside() {
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  "inline-flex items-center justify-center size-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent",
+                  "inline-flex items-center justify-center size-9 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-accent",
                   isActive && "text-foreground",
                 )
               }
@@ -113,8 +113,8 @@ export function Aside() {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent whitespace-nowrap",
-                      isActive && "text-foreground",
+                      "w-full justify-start text-secondary-foreground hover:text-foreground hover:bg-accent whitespace-nowrap",
+                      isActive && "text-foreground font-medium",
                     )}
                   >
                     {item.label}

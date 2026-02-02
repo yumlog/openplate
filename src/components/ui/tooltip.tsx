@@ -11,8 +11,10 @@ const TooltipTrigger = TooltipPrimitive.Trigger;
 
 type Position = "top" | "bottom" | "left" | "right";
 
-interface TooltipContentProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, "side"> {
+interface TooltipContentProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>,
+  "side"
+> {
   position?: Position;
   showAnchor?: boolean;
 }
@@ -20,29 +22,40 @@ interface TooltipContentProps
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   TooltipContentProps
->(({ className, sideOffset = 4, position = "top", showAnchor = true, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      side={position}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 overflow-hidden rounded-md bg-muted-foreground px-3 py-1.5 text-xs font-bold text-background animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className,
-      )}
-      {...props}
-    >
-      {props.children}
-      {showAnchor && (
-        <TooltipPrimitive.Arrow
-          className="fill-muted-foreground"
-          width={8}
-          height={4}
-        />
-      )}
-    </TooltipPrimitive.Content>
-  </TooltipPrimitive.Portal>
-));
+>(
+  (
+    {
+      className,
+      sideOffset = 4,
+      position = "top",
+      showAnchor = true,
+      ...props
+    },
+    ref,
+  ) => (
+    <TooltipPrimitive.Portal>
+      <TooltipPrimitive.Content
+        ref={ref}
+        side={position}
+        sideOffset={sideOffset}
+        className={cn(
+          "z-50 overflow-hidden rounded-sm bg-muted-foreground px-3 py-1.5 text-xs font-bold text-background animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          className,
+        )}
+        {...props}
+      >
+        {props.children}
+        {showAnchor && (
+          <TooltipPrimitive.Arrow
+            className="fill-muted-foreground"
+            width={8}
+            height={4}
+          />
+        )}
+      </TooltipPrimitive.Content>
+    </TooltipPrimitive.Portal>
+  ),
+);
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };

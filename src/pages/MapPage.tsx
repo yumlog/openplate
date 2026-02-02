@@ -1,17 +1,19 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import { Search, ZoomIn, ZoomOut, RotateCcw, CalendarIcon } from "lucide-react";
+import {
+  Search,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Clock,
+  File,
+  Camera,
+} from "lucide-react";
 import MapSvg from "@/assets/map.svg?react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -19,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -244,183 +248,176 @@ export function MapPage() {
   }, []);
 
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className="flex h-full flex-col gap-5">
+      <h2 className="text-[28px] text-foreground font-bold">출차감지</h2>
       {/* 상단 카드 리스트 */}
       <div className="flex items-center gap-3">
-        <div className="h-33 flex flex-col justify-between flex-1 rounded-xl border shadow-xs bg-background p-5">
-          <p className="text-base text-foreground">입주민 주차 중</p>
-          <p className="text-4xl text-foreground font-semibold">86</p>
-          <p className="text-xs text-muted-foreground">
-            {formatDateTime(now)} 기준
-          </p>
-        </div>
-        <div className="h-33 flex flex-col justify-between flex-1 rounded-xl border shadow-xs bg-background p-5">
-          <p className="text-base text-foreground">방문객 주차 중</p>
-          <p className="text-4xl text-foreground font-semibold">62</p>
-          <p className="text-xs text-muted-foreground">
-            {formatDateTime(now)} 기준
-          </p>
-        </div>
-        <div className="h-33 flex flex-col justify-between flex-1 rounded-xl border shadow-xs bg-background p-5">
-          <p className="text-base text-foreground">미확인 주차 중</p>
-          <p className="text-4xl text-foreground font-semibold">29</p>
-          <p className="text-xs text-muted-foreground">
-            {formatDateTime(now)} 기준
-          </p>
-        </div>
-        <div className="h-33 flex flex-col justify-between flex-1 rounded-xl border shadow-xs bg-background p-5">
-          <p className="text-base text-foreground">빈 주차 칸</p>
-          <p className="text-4xl text-foreground font-semibold">12</p>
-          <p className="text-xs text-muted-foreground">
-            {formatDateTime(now)} 기준
-          </p>
-        </div>
-        <div className="h-33 flex flex-col justify-center items-center flex-1 rounded-xl border shadow-xs bg-black p-5">
-          <p className="flex items-center gap-1 text-4xl font-semibold text-neutral-400">
-            <span className="text-primary">234</span>
+        {[
+          { label: "입주민 주차 중", value: "86" },
+          { label: "방문객 주차 중", value: "62" },
+          { label: "미확인 주차 중", value: "29" },
+          { label: "빈 주차 칸", value: "12" },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="h-28.5 flex flex-col justify-between flex-1 rounded-xl bg-primary-foreground p-4"
+          >
+            <p className="text-sm text-foreground">{item.label}</p>
+            <p className="text-[28px] text-foreground font-bold">
+              {item.value}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {formatDateTime(now)} 기준
+            </p>
+          </div>
+        ))}
+        <div className="h-28.5 flex flex-col justify-between flex-1 rounded-xl bg-foreground p-4">
+          <p className="text-sm text-background">주차 점유율</p>
+          <p className="flex items-center gap-1 text-[28px] font-semibold text-secondary-foreground">
+            <span className="text-secondary">234</span>
             <span>/</span>
             <span>491</span>
           </p>
+          <p className="text-xs text-border">{formatDateTime(now)} 기준</p>
         </div>
       </div>
 
       {/* 검색 폼 */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* 입주민 조회 */}
+          <div className="flex items-center gap-2">
+            <Label>입주민 조회</Label>
+            <Select>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="동" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1101">1101동</SelectItem>
+                <SelectItem value="1102">1102동</SelectItem>
+                <SelectItem value="1103">1103동</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="층/호" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="11">1층 1호</SelectItem>
+                <SelectItem value="21">2층 1호</SelectItem>
+                <SelectItem value="31">3층 1호</SelectItem>
+                <SelectItem value="41">4층 1호</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* 일자 데이트피커 */}
-          <Popover>
-            <PopoverTrigger className="inline-flex h-9 w-36 items-center justify-start gap-2 rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
-              <CalendarIcon className="size-4" />
-              {date ? format(date, "yyyy-MM-dd", { locale: ko }) : "날짜 선택"}
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                locale={ko}
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="flex items-center gap-2">
+            <Label>날짜</Label>
+            <DatePicker date={date} onDateChange={setDate} />
+          </div>
 
           {/* 층 셀렉트 */}
-          <Select defaultValue="b1">
-            <SelectTrigger className="w-24">
-              <SelectValue placeholder="층 선택" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="b3">B3</SelectItem>
-              <SelectItem value="b2">B2</SelectItem>
-              <SelectItem value="b1">B1</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Label>층</Label>
+            <Select defaultValue="b1">
+              <SelectTrigger>
+                <SelectValue placeholder="층 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="b3">B3</SelectItem>
+                <SelectItem value="b2">B2</SelectItem>
+                <SelectItem value="b1">B1</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* 슬라이더 */}
-          <span className="text-xs text-muted-foreground">00:00</span>
-          <div className="relative">
-            <Slider
-              value={time}
-              onValueChange={(value) => {
-                setTime(value);
-                setIsDragging(true);
-              }}
-              onValueCommit={() => setIsDragging(false)}
-              min={0}
-              max={1440}
-              step={30}
-              className="w-48"
-            />
-            {isDragging && (
-              <div
-                className="absolute -top-8 rounded-sm bg-primary-foreground px-3 py-1.5 text-xs text-primary font-bold"
-                style={{
-                  left: `calc(${(time[0] / 1440) * 100}% + ${8 - (time[0] / 1440) * 16}px)`,
-                  transform: "translateX(-50%)",
+          <div className="flex items-center gap-3 px-4">
+            <span className="text-xs text-muted-foreground">00:00</span>
+            <div className="relative">
+              <Slider
+                value={time}
+                onValueChange={(value) => {
+                  setTime(value);
+                  setIsDragging(true);
                 }}
-              >
-                {formatTime(time[0])}
-              </div>
-            )}
+                onValueCommit={() => setIsDragging(false)}
+                min={0}
+                max={1440}
+                step={30}
+                className="w-48"
+              />
+              {isDragging && (
+                <div
+                  className="absolute z-1 top-4.5 flex flex-col items-center"
+                  style={{
+                    left: `calc(${(time[0] / 1440) * 100}% + ${8 - (time[0] / 1440) * 16}px)`,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  <div className="size-2.5 rotate-45 bg-primary" />
+                  <div className="-mt-[5px] rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
+                    {formatTime(time[0])}
+                  </div>
+                </div>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground">24:00</span>
           </div>
-          <span className="text-xs text-muted-foreground">24:00</span>
 
           {/* 차량검색 인풋 */}
-          <Input placeholder="차량번호 입력" className="w-36" />
+          <Input
+            placeholder="차량번호 입력"
+            className="w-48"
+            startIcon={<Search className="size-4" />}
+          />
 
           {/* 검색 버튼 */}
-          <Button>
-            <Search className="size-4" />
-            검색
-          </Button>
+          <Button>검색</Button>
         </div>
       </div>
 
       {/* 메인 영역: 조회 폼 + 지도 */}
-      <div className="flex flex-1 gap-4 overflow-hidden">
+      <div className="flex flex-1 gap-3 overflow-hidden">
         {/* 좌측 조회 폼 */}
-        <div className="flex w-64 shrink-0 flex-col gap-4 overflow-y-auto rounded-lg border bg-background p-4">
-          {/* 입주민 조회 */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">입주민 조회</h3>
-            <div className="flex gap-2">
-              <Select>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="동" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="101">101동</SelectItem>
-                  <SelectItem value="102">102동</SelectItem>
-                  <SelectItem value="103">103동</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="층/호" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="101">101호</SelectItem>
-                  <SelectItem value="102">102호</SelectItem>
-                  <SelectItem value="201">201호</SelectItem>
-                  <SelectItem value="202">202호</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="flex w-64 shrink-0 flex-col gap-5 overflow-y-auto rounded-xl border bg-background px-4 py-5">
+          {/* 조회 결과 */}
+          <div className="space-y-1">
+            <h3 className="text-base text-foreground font-bold">입주민 0006</h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>010-1234-5678</span>
+              <Separator orientation="vertical" className="h-2" />
+              <span>1101-0201</span>
             </div>
           </div>
-
-          {/* 보유 차량 */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">보유 차량</h3>
-            <div className="space-y-2">
-              {sampleParkingData.map((spot) => (
-                <Button
-                  key={spot.parkingId}
-                  variant="outline"
-                  className="h-auto w-full flex-col items-start p-3"
-                  onClick={() => moveToParkingSpot(spot.parkingId)}
-                >
-                  <div className="flex w-full items-center justify-between">
-                    <span className="font-medium text-foreground">
-                      {spot.plateNumber}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {spot.location}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {formatDateTime(spot.parkedAt)}
-                  </p>
-                </Button>
-              ))}
-            </div>
+          <div className="space-y-1">
+            <p className="text-sm text-foreground">보유 차량</p>
+            {sampleParkingData.map((spot) => (
+              <Button
+                key={spot.parkingId}
+                variant="outline"
+                className="h-auto w-full flex-col items-start gap-0 px-4 py-3 bg-muted-foreground hover:bg-muted-foreground/90"
+                onClick={() => moveToParkingSpot(spot.parkingId)}
+              >
+                <p className="text-sm text-secondary font-bold">
+                  {spot.plateNumber}
+                </p>
+                <p className="text-sm text-background">{spot.location}</p>
+                <p className="mt-2 text-xs text-background/80">
+                  {formatDateTime(spot.parkedAt)}
+                </p>
+              </Button>
+            ))}
           </div>
         </div>
 
         {/* 우측 지도 영역 */}
         <div
           ref={mapContainerRef}
-          className="relative flex-1 overflow-hidden rounded-lg border bg-background"
+          className="relative flex-1 overflow-hidden rounded-xl border bg-background"
           onMouseDown={handleMapMouseDown}
           onMouseMove={handleMapMouseMove}
           onMouseUp={handleMapMouseUp}
@@ -445,19 +442,19 @@ export function MapPage() {
               className="pointer-events-none fixed z-50 flex flex-col items-center"
               style={{
                 left: tooltipPosition.x,
-                top: tooltipPosition.y - 8,
+                top: tooltipPosition.y - 6,
                 transform: "translate(-50%, -100%)",
               }}
             >
-              <div className="rounded-md bg-foreground px-3 py-1.5 text-xs font-bold text-background">
+              <div className="rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
                 {hoveredSpot.parkingId} (차량 있음)
               </div>
-              <div className="size-0 border-x-6 border-t-6 border-x-transparent border-t-foreground" />
+              <div className="-mt-[5px] size-2.5 rotate-45 bg-primary" />
             </div>
           )}
 
           {/* 우측 상단 컨트롤 */}
-          <div className="absolute right-4 top-4 flex gap-2">
+          <div className="absolute right-3 top-3 flex gap-2">
             <Button
               variant="outline"
               size="icon"
@@ -488,34 +485,33 @@ export function MapPage() {
           </div>
 
           {/* 좌측 하단 범례 */}
-          <div className="absolute bottom-4 left-4 flex items-center gap-3 rounded-md border bg-background px-3 py-2">
-            <div className="flex items-center gap-1.5">
-              <div className="size-3 rounded-full bg-blue-500" />
-              <span className="text-xs text-foreground">입주민</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="size-3 rounded-full bg-yellow-500" />
-              <span className="text-xs text-foreground">방문차량</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="size-3 rounded-full bg-gray-400" />
-              <span className="text-xs text-foreground">인식불가</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="size-3 rounded-full bg-green-500" />
-              <span className="text-xs text-foreground">빈자리</span>
-            </div>
+          <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
+            {[
+              { color: "#A4FF04", label: "전기차" },
+              { color: "#FCA5A5", label: "임산부" },
+              { color: "#93C5FD", label: "장애인" },
+              { color: "#E9D5FF", label: "경차" },
+              { color: "#666666", label: "일반" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-1">
+                <div
+                  className="size-3 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-xs text-foreground">{item.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       {/* CCTV 모달 */}
       <Dialog open={cctvModalOpen} onOpenChange={setCctvModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>CCTV {selectedCctv}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* 원본/ROI 버튼 */}
             <div className="flex gap-2">
               <Button
@@ -534,14 +530,24 @@ export function MapPage() {
               </Button>
             </div>
 
+            {/* 이미지 영역 */}
+            <div className="flex aspect-video items-center justify-center rounded-lg border bg-muted">
+              <span className="text-sm text-muted-foreground">이미지 영역</span>
+            </div>
+
             {/* 촬영 정보 */}
-            <div className="text-sm text-muted-foreground">
-              촬영 시간: {format(now, "HH:mm:ss")} | 파일: test.jpg
+            <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
+              <Camera className="size-4" />
+              <span>촬영 시간: {format(now, "HH:mm:ss")}</span>
+              <Separator orientation="vertical" className="h-3" />
+              <File className="size-4" />
+              <span>파일: test.jpg</span>
             </div>
 
             {/* TIME SLOT */}
-            <div className="text-sm text-muted-foreground">
-              TIME SLOT: {format(now, "HH:mm:ss")}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
+              <Clock className="size-4" />
+              <span>TIME SLOT: {format(now, "HH:mm:ss")}</span>
             </div>
           </div>
         </DialogContent>
