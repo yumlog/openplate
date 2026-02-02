@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 
 const routeLabels: Record<string, string> = {
