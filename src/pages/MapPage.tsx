@@ -490,7 +490,7 @@ export function MapPage() {
               { color: "#55D400", label: "전기차" },
               { color: "#FCA5A5", label: "임산부" },
               { color: "#93C5FD", label: "장애인" },
-              { color: "#E9D5FF", label: "경차" },
+              { color: "#DFC7FA", label: "경차" },
               { color: "#666666", label: "일반" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1">
