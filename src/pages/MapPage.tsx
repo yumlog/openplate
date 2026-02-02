@@ -488,9 +488,9 @@ export function MapPage() {
           <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
             {[
               { color: "#55D400", label: "전기차" },
-              { color: "#FCA5A5", label: "임산부" },
-              { color: "#93C5FD", label: "장애인" },
-              { color: "#DFC7FA", label: "경차" },
+              { color: "#FF9F9F", label: "임산부" },
+              { color: "#83BDFF", label: "장애인" },
+              { color: "#00439F", label: "경차" },
               { color: "#666666", label: "일반" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1">
@@ -536,18 +536,23 @@ export function MapPage() {
             </div>
 
             {/* 촬영 정보 */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
-              <Camera className="size-4" />
-              <span>촬영 시간: {format(now, "HH:mm:ss")}</span>
+            <div className="flex justify-between items-center">
+              <div className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
+                <Camera className="size-4" />
+                <span>촬영 시간: {format(now, "HH:mm:ss")}</span>
+              </div>
               <Separator orientation="vertical" className="h-3" />
-              <File className="size-4" />
-              <span>파일: test.jpg</span>
-            </div>
-
-            {/* TIME SLOT */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
-              <Clock className="size-4" />
-              <span>TIME SLOT: {format(now, "HH:mm:ss")}</span>
+              <div className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
+                <File className="size-4" />
+                <span className="flex items-center">
+                  파일:&nbsp;<span className="truncate max-w-24">test</span>.jpg
+                </span>
+              </div>
+              <Separator orientation="vertical" className="h-3" />
+              <div className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
+                <Clock className="size-4" />
+                <span>TIME SLOT: {format(now, "HH:mm:ss")}</span>
+              </div>
             </div>
           </div>
         </DialogContent>
