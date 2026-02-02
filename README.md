@@ -17,6 +17,16 @@ src/
 │   └── ui/
 │       ├── avatar.tsx       # Avatar 컴포넌트
 │       ├── button.tsx       # Button 컴포넌트
+│       ├── calendar.tsx     # Calendar 컴포넌트
+│       ├── card.tsx         # Card 컴포넌트
+│       ├── date-picker.tsx  # DatePicker 컴포넌트
+│       ├── dialog.tsx       # Dialog 컴포넌트
+│       ├── input.tsx        # Input 컴포넌트
+│       ├── label.tsx        # Label 컴포넌트
+│       ├── popover.tsx      # Popover 컴포넌트
+│       ├── select.tsx       # Select 컴포넌트
+│       ├── separator.tsx    # Separator 컴포넌트
+│       ├── slider.tsx       # Slider 컴포넌트
 │       └── tooltip.tsx      # Tooltip 컴포넌트
 ├── lib/
 │   └── utils.ts             # 유틸리티 함수 (cn)
@@ -78,5 +88,7 @@ yarn preview
 
 ### 테마 컬러
 
-- **Primary**: `#A4FF04` (연두색)
+- **Primary**: `#171717` (다크 그레이)
+- **Primary Foreground**: `#fafafa` (화이트)
+- **Secondary**: `#a4ff04` (연두색)
 - **Grayscale**: Neutral 컬러 시스템

@@ -15,7 +15,10 @@ Tailwind의 neutral 컬러 대신 **시맨틱 컬러**를 사용합니다.
 | 배경색 (흰색) | `bg-background` | `#ffffff` (white) |
 | 호버/컨테이너 배경 | `bg-accent` | `#f5f5f5` (neutral-100) |
 | 테두리 | `border` (기본) | `#e5e5e5` (neutral-200) |
-| Primary 강조색 | `text-primary`, `bg-primary` | `#A4FF04` |
+| Primary (버튼/텍스트) | `text-primary`, `bg-primary` | `#171717` |
+| Primary Foreground | `text-primary-foreground` | `#fafafa` |
+| Secondary 강조색 | `text-secondary`, `bg-secondary` | `#a4ff04` |
+| Secondary Foreground | `text-secondary-foreground` | `#a3a3a3` |
 
 ### 사용 금지 클래스
 
@@ -38,7 +41,10 @@ border-neutral-200  →  border (기본값)
   --muted-foreground: 0 0% 45.1%; /* #737373 */
   --accent: 0 0% 96.1%;           /* #f5f5f5 */
   --border: 0 0% 89.8%;           /* #e5e5e5 */
-  --primary: 82 100% 51%;         /* #A4FF04 */
+  --primary: 0 0% 9%;             /* #171717 */
+  --primary-foreground: 0 0% 98%; /* #fafafa */
+  --secondary: 82 100% 51%;       /* #a4ff04 */
+  --secondary-foreground: 0 0% 64%; /* #a3a3a3 */
 }
 ```
 
@@ -102,10 +108,13 @@ border-neutral-200  →  border (기본값)
 | Size | 크기 |
 |------|------|
 | `default` | `h-9 px-4` |
+| `xs` | `h-6 px-2` |
 | `sm` | `h-8 px-3` |
-| `lg` | `h-10 px-8` |
-| `icon` | `h-9 w-9` |
-| `icon-sm` | `h-8 w-8` |
+| `lg` | `h-10 px-6` |
+| `icon` | `size-9` |
+| `icon-xs` | `size-6` |
+| `icon-sm` | `size-8` |
+| `icon-lg` | `size-10` |
 
 ### 아이콘
 
@@ -170,12 +179,24 @@ src/
 │   │   ├── Layout.tsx
 │   │   └── index.ts
 │   └── ui/              # shadcn/ui 기반 컴포넌트
-│       ├── button.tsx
 │       ├── avatar.tsx
+│       ├── button.tsx
+│       ├── calendar.tsx
+│       ├── card.tsx
+│       ├── date-picker.tsx
+│       ├── dialog.tsx
+│       ├── input.tsx
+│       ├── label.tsx
+│       ├── popover.tsx
+│       ├── select.tsx
+│       ├── separator.tsx
+│       ├── slider.tsx
 │       └── tooltip.tsx
 ├── pages/               # 페이지 컴포넌트
 │   ├── HomePage.tsx
 │   ├── MapPage.tsx
+│   ├── TimelinePage.tsx
+│   ├── CoveragePage.tsx
 │   └── index.ts
 ├── lib/
 │   └── utils.ts         # cn() 유틸리티
