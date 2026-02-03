@@ -187,7 +187,7 @@ export function RoiLabelingPage() {
           </div>
 
           {/* 이미지 컨테이너 */}
-          <div className="relative flex-1 overflow-hidden rounded-lg border bg-accent">
+          <div className="relative flex-1 overflow-hidden rounded-lg border">
             {/* CCTV 이미지 */}
             <img
               src={cctvImage}

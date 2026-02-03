@@ -36,7 +36,6 @@ export function CoveragePage() {
   const [cctvOptions, setCctvOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [imageRatio, setImageRatio] = useState(0);
   const [zoom, setZoom] = useState(100);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isMapDragging, setIsMapDragging] = useState(false);
@@ -319,36 +318,18 @@ export function CoveragePage() {
             {currentCctvLabel}
           </h3>
 
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-foreground">방향1 (상단)</span>
-            <div
-              className="overflow-hidden rounded-lg border"
-              style={imageRatio ? { aspectRatio: imageRatio } : undefined}
-            >
-              <img
-                src={cctvImage}
-                alt="CCTV 방향1"
-                className="w-full"
-                onLoad={(e) => {
-                  const { naturalWidth, naturalHeight } = e.currentTarget;
-                  setImageRatio(naturalWidth / (naturalHeight / 2));
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-foreground">방향2 (하단)</span>
-            <div
-              className="overflow-hidden rounded-lg border"
-              style={imageRatio ? { aspectRatio: imageRatio } : undefined}
-            >
-              <img
-                src={cctvImage}
-                alt="CCTV 방향2"
-                className="w-full -translate-y-1/2"
-              />
-            </div>
+          <div className="relative">
+            <img
+              src={cctvImage}
+              alt="CCTV 이미지"
+              className="w-full rounded-lg border"
+            />
+            <span className="absolute top-3 left-3 flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
+              방향1 (상단)
+            </span>
+            <span className="absolute top-[calc(50%+12px)] left-3 flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
+              방향2 (하단)
+            </span>
           </div>
         </div>
 
