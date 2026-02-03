@@ -287,15 +287,6 @@ export function CoveragePage() {
           <ChevronRight className="size-4" />
         </Button>
 
-        <Button
-          onClick={() =>
-            console.log("저장:", { direction1Selection, direction2Selection })
-          }
-        >
-          <Save className="size-4" />
-          저장
-        </Button>
-
         <Button variant="outline" onClick={handleReset}>
           <RotateCcw className="size-4" />
           초기화
@@ -307,6 +298,15 @@ export function CoveragePage() {
         >
           <EyeOff className="size-4" />
           미매칭 표시
+        </Button>
+
+        <Button
+          onClick={() =>
+            console.log("저장:", { direction1Selection, direction2Selection })
+          }
+        >
+          <Save className="size-4" />
+          저장
         </Button>
       </div>
 

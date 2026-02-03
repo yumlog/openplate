@@ -69,59 +69,66 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Dialog animations */
-@keyframes dialog-overlay-show {
-  from {
-    opacity: 0;
+/* tailwindcss-animate keyframes */
+@theme inline {
+  --animate-in: enter 200ms ease-out;
+  --animate-out: exit 150ms ease-in;
+
+  @keyframes enter {
+    from {
+      opacity: var(--tw-enter-opacity, 1);
+      transform: translate3d(
+          var(--tw-enter-translate-x, 0),
+          var(--tw-enter-translate-y, 0),
+          0
+        )
+        scale3d(
+          var(--tw-enter-scale, 1),
+          var(--tw-enter-scale, 1),
+          var(--tw-enter-scale, 1)
+        )
+        rotate(var(--tw-enter-rotate, 0));
+    }
   }
-  to {
-    opacity: 1;
+
+  @keyframes exit {
+    to {
+      opacity: var(--tw-exit-opacity, 1);
+      transform: translate3d(
+          var(--tw-exit-translate-x, 0),
+          var(--tw-exit-translate-y, 0),
+          0
+        )
+        scale3d(
+          var(--tw-exit-scale, 1),
+          var(--tw-exit-scale, 1),
+          var(--tw-exit-scale, 1)
+        )
+        rotate(var(--tw-exit-rotate, 0));
+    }
   }
 }
 
-@keyframes dialog-overlay-hide {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+@utility animate-in {
+  animation: var(--animate-in);
 }
 
-@keyframes dialog-content-show {
-  from {
-    opacity: 0;
-    scale: 0.96;
-  }
-  to {
-    opacity: 1;
-    scale: 1;
-  }
+@utility animate-out {
+  animation: var(--animate-out);
 }
 
-@keyframes dialog-content-hide {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-  to {
-    opacity: 0;
-    scale: 0.96;
-  }
+@utility fade-in-0 {
+  --tw-enter-opacity: 0;
 }
 
-.dialog-overlay[data-state="open"] {
-  animation: dialog-overlay-show 200ms ease-out;
+@utility fade-out-0 {
+  --tw-exit-opacity: 0;
 }
 
-.dialog-overlay[data-state="closed"] {
-  animation: dialog-overlay-hide 150ms ease-in;
+@utility zoom-in-95 {
+  --tw-enter-scale: 0.95;
 }
 
-.dialog-content[data-state="open"] {
-  animation: dialog-content-show 200ms ease-out;
-}
-
-.dialog-content[data-state="closed"] {
-  animation: dialog-content-hide 150ms ease-in;
+@utility zoom-out-95 {
+  --tw-exit-scale: 0.95;
 }

@@ -26,6 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Progress } from "@/components/ui/progress";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -105,11 +106,6 @@ export function RoiLabelingPage() {
           </Select>
         </div>
 
-        <Button>
-          <Save className="size-4" />
-          저장
-        </Button>
-
         <Button variant="outline">
           <Download className="size-4" />
           전체 불러오기
@@ -118,6 +114,11 @@ export function RoiLabelingPage() {
         <Button variant="outline">
           <RefreshCw className="size-4" />
           현재 CCTV ROI 새로고침
+        </Button>
+
+        <Button>
+          <Save className="size-4" />
+          저장
         </Button>
       </div>
 
@@ -152,7 +153,7 @@ export function RoiLabelingPage() {
                   key={slot}
                   variant="outline"
                   onClick={() => setSelectedSlot(slot)}
-                  className={`h-auto w-full justify-between px-2 py-1.5 ${selectedSlot === slot ? "bg-primary hover:bg-primary/90" : "bg-muted-foreground hover:bg-muted-foreground/90"}`}
+                  className={`h-auto w-full justify-between px-3 py-2 ${selectedSlot === slot ? "bg-primary hover:bg-primary/90" : "bg-muted-foreground hover:bg-muted-foreground/90"}`}
                 >
                   <span className="text-sm text-secondary font-bold tabular-nums">
                     {slot}
@@ -177,9 +178,7 @@ export function RoiLabelingPage() {
               <span className="text-sm text-muted-foreground">00:00:00</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-1.5 min-w-32 rounded-full bg-muted-foreground/20">
-                <div className="h-full w-[25%] rounded-full bg-primary" />
-              </div>
+              <Progress value={25} className="w-32" />
               <span className="text-sm text-muted-foreground whitespace-nowrap">
                 0/615 완료(0%)
               </span>
@@ -230,7 +229,7 @@ export function RoiLabelingPage() {
             </div>
 
             {/* 좌측 하단 범례 */}
-            <div className="absolute bottom-3 left-3 flex flex-col gap-1 rounded-lg border bg-background px-3 py-2">
+            <div className="absolute bottom-3 right-3 flex flex-col gap-1 rounded-lg border bg-background px-3 py-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                 <Crosshair className="size-3" />
                 <span>현재 ROI 좌표</span>

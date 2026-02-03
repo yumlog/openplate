@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Tag,
+  Image,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,11 @@ const menuItems: MenuItem[] = [
     icon: <Tag className="size-5" />,
     label: "ROI 라벨링",
     href: "/roi-labeling",
+  },
+  {
+    icon: <Image className="size-5" />,
+    label: "Reference 빌더",
+    href: "/reference-builder",
   },
 ];
 

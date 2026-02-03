@@ -185,6 +185,9 @@ src/
 │       ├── card.tsx
 │       ├── date-picker.tsx
 │       ├── dialog.tsx
+│       ├── alert-dialog.tsx
+│       ├── badge.tsx
+│       ├── progress.tsx
 │       ├── input.tsx
 │       ├── label.tsx
 │       ├── popover.tsx
@@ -197,6 +200,8 @@ src/
 │   ├── MapPage.tsx
 │   ├── TimelinePage.tsx
 │   ├── CoveragePage.tsx
+│   ├── RoiLabelingPage.tsx
+│   ├── ReferenceBuilderPage.tsx
 │   └── index.ts
 ├── lib/
 │   └── utils.ts         # cn() 유틸리티

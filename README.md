@@ -21,6 +21,9 @@ src/
 │       ├── card.tsx         # Card 컴포넌트
 │       ├── date-picker.tsx  # DatePicker 컴포넌트
 │       ├── dialog.tsx       # Dialog 컴포넌트
+│       ├── alert-dialog.tsx # AlertDialog 컴포넌트
+│       ├── badge.tsx        # Badge 컴포넌트
+│       ├── progress.tsx     # Progress 컴포넌트
 │       ├── input.tsx        # Input 컴포넌트
 │       ├── label.tsx        # Label 컴포넌트
 │       ├── popover.tsx      # Popover 컴포넌트
@@ -32,9 +35,11 @@ src/
 │   └── utils.ts             # 유틸리티 함수 (cn)
 ├── pages/
 │   ├── HomePage.tsx         # 홈 페이지
-│   ├── MapPage.tsx          # 지도 페이지
 │   ├── TimelinePage.tsx     # 타임라인 페이지
+│   ├── MapPage.tsx          # 지도 페이지
 │   ├── CoveragePage.tsx     # 커버리지 페이지
+│   ├── RoiLabelingPage.tsx  # ROI 라벨링 페이지
+│   ├── ReferenceBuilderPage.tsx # Reference 빌더 페이지
 │   └── index.ts
 ├── App.tsx                  # 앱 엔트리 (라우팅)
 ├── main.tsx                 # React 엔트리포인트
@@ -59,16 +64,16 @@ yarn preview
 
 ## 4. 기술 스택
 
-| 카테고리 | 기술 |
-|---------|------|
-| Framework | React 18 |
-| Language | TypeScript |
-| Build Tool | Vite |
-| Styling | Tailwind CSS v4 |
+| 카테고리      | 기술                 |
+| ------------- | -------------------- |
+| Framework     | React 18             |
+| Language      | TypeScript           |
+| Build Tool    | Vite                 |
+| Styling       | Tailwind CSS v4      |
 | UI Components | shadcn/ui (Radix UI) |
-| Icons | Lucide React |
-| Routing | React Router v7 |
-| Font | Pretendard |
+| Icons         | Lucide React         |
+| Routing       | React Router v7      |
+| Font          | Pretendard           |
 
 ## 5. 개발 환경
 
@@ -79,12 +84,12 @@ yarn preview
 
 ### 스크립트
 
-| 명령어 | 설명 |
-|--------|------|
-| `yarn dev` | 개발 서버 실행 (기본: http://localhost:5173) |
-| `yarn build` | TypeScript 컴파일 및 프로덕션 빌드 |
-| `yarn preview` | 빌드된 결과물 미리보기 |
-| `yarn lint` | ESLint 코드 검사 |
+| 명령어         | 설명                                         |
+| -------------- | -------------------------------------------- |
+| `yarn dev`     | 개발 서버 실행 (기본: http://localhost:5173) |
+| `yarn build`   | TypeScript 컴파일 및 프로덕션 빌드           |
+| `yarn preview` | 빌드된 결과물 미리보기                       |
+| `yarn lint`    | ESLint 코드 검사                             |
 
 ### 테마 컬러
 

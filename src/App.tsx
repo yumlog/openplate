@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { Layout } from "@/components/layout"
-import { HomePage, MapPage, TimelinePage, CoveragePage, RoiLabelingPage } from "@/pages"
+import { HomePage, MapPage, TimelinePage, CoveragePage, RoiLabelingPage, ReferenceBuilderPage } from "@/pages"
 
 function App() {
   return (
@@ -12,6 +12,7 @@ function App() {
           <Route path="/timeline" element={<TimelinePage />} />
           <Route path="/coverage" element={<CoveragePage />} />
           <Route path="/roi-labeling" element={<RoiLabelingPage />} />
+          <Route path="/reference-builder" element={<ReferenceBuilderPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>
