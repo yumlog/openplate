@@ -151,7 +151,7 @@ export function RoiLabelingPage() {
                   key={slot}
                   variant="outline"
                   onClick={() => setSelectedSlot(slot)}
-                  className="h-auto w-full justify-between px-2 py-1.5 bg-muted-foreground hover:bg-muted-foreground/90"
+                  className={`h-auto w-full justify-between px-2 py-1.5 ${selectedSlot === slot ? "bg-primary hover:bg-primary/90" : "bg-muted-foreground hover:bg-muted-foreground/90"}`}
                 >
                   <span className="text-sm text-secondary font-bold tabular-nums">
                     {slot}
