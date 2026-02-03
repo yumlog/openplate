@@ -93,7 +93,9 @@ export function MapPage() {
   const moveToParkingSpot = useCallback((parkingId: string) => {
     const svgContainer = svgContainerRef.current;
     const container = mapContainerRef.current;
-    const parkingEl = svgContainer?.querySelector(`[data-parking-id="${parkingId}"]`);
+    const parkingEl = svgContainer?.querySelector(
+      `[data-parking-id="${parkingId}"]`,
+    );
 
     if (!parkingEl || !container || !svgContainer) return;
 
@@ -105,8 +107,14 @@ export function MapPage() {
     // 컨테이너 중앙과 주차칸 중앙 사이의 거리 계산
     const containerRect = container.getBoundingClientRect();
     const parkingRect = parkingEl.getBoundingClientRect();
-    const distX = (containerRect.left + containerRect.width / 2) - (parkingRect.left + parkingRect.width / 2);
-    const distY = (containerRect.top + containerRect.height / 2) - (parkingRect.top + parkingRect.height / 2);
+    const distX =
+      containerRect.left +
+      containerRect.width / 2 -
+      (parkingRect.left + parkingRect.width / 2);
+    const distY =
+      containerRect.top +
+      containerRect.height / 2 -
+      (parkingRect.top + parkingRect.height / 2);
 
     svgContainer.style.transform = originalTransform;
 
@@ -451,25 +459,13 @@ export function MapPage() {
 
           {/* 우측 상단 컨트롤 */}
           <div className="absolute right-3 top-3 flex gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleZoomIn}
-            >
+            <Button variant="outline" size="icon" onClick={handleZoomIn}>
               <ZoomIn className="size-4" />
             </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleZoomOut}
-            >
+            <Button variant="outline" size="icon" onClick={handleZoomOut}>
               <ZoomOut className="size-4" />
             </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleZoomReset}
-            >
+            <Button variant="outline" size="icon" onClick={handleZoomReset}>
               <RotateCcw className="size-4" />
             </Button>
             <div className="flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
@@ -531,11 +527,28 @@ export function MapPage() {
             {/* 촬영 정보 */}
             <div className="flex justify-between items-center divide-x">
               {[
-                { icon: Camera, content: `촬영 시간: ${format(now, "HH:mm:ss")}` },
-                { icon: File, content: <span className="flex items-center">파일:&nbsp;<span className="truncate max-w-24">test</span>.jpg</span> },
-                { icon: Clock, content: `TIME SLOT: ${format(now, "HH:mm:ss")}` },
+                {
+                  icon: Camera,
+                  content: `촬영 시간: ${format(now, "HH:mm:ss")}`,
+                },
+                {
+                  icon: File,
+                  content: (
+                    <span className="flex items-center">
+                      파일:&nbsp;<span className="truncate max-w-24">test</span>
+                      .jpg
+                    </span>
+                  ),
+                },
+                {
+                  icon: Clock,
+                  content: `TIME SLOT: ${format(now, "HH:mm:ss")}`,
+                },
               ].map((item, index) => (
-                <div key={index} className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
+                <div
+                  key={index}
+                  className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight"
+                >
                   <item.icon className="size-4" />
                   <span>{item.content}</span>
                 </div>

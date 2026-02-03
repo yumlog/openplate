@@ -8,6 +8,7 @@ const routeLabels: Record<string, string> = {
   "/map": "지도",
   "/timeline": "타임라인",
   "/coverage": "커버리지",
+  "/roi-labeling": "ROI 라벨링",
 };
 
 export function Header() {

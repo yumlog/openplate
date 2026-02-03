@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { flushSync } from "react-dom";
-import { Map, Clock, LayoutGrid, ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  Map,
+  Clock,
+  LayoutGrid,
+  ArrowLeft,
+  ArrowRight,
+  Tag,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +25,11 @@ const menuItems: MenuItem[] = [
     icon: <LayoutGrid className="size-5" />,
     label: "커버리지",
     href: "/coverage",
+  },
+  {
+    icon: <Tag className="size-5" />,
+    label: "ROI 라벨링",
+    href: "/roi-labeling",
   },
 ];
 
