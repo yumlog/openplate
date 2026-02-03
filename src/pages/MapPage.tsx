@@ -64,6 +64,10 @@ const sampleParkingData: ParkingSpot[] = [
   },
 ];
 
+const ZOOM_MIN = 50;
+const ZOOM_MAX = 500;
+const ZOOM_STEP = 10;
+
 export function MapPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState<number[]>([720]);
@@ -85,36 +89,32 @@ export function MapPage() {
 
   const now = new Date();
 
-  // 주차 위치로 지도 이동
-  const moveToParkingSpot = useCallback(
-    (parkingId: string) => {
-      const svgElement = svgContainerRef.current?.querySelector("svg");
-      const parkingElement = svgElement?.querySelector(
-        `[data-parking-id="${parkingId}"]`,
-      );
-      const containerElement = mapContainerRef.current;
+  // 주차 위치로 지도 이동 (500% 확대 후 지도 컨테이너 중앙 정렬)
+  const moveToParkingSpot = useCallback((parkingId: string) => {
+    const svgContainer = svgContainerRef.current;
+    const container = mapContainerRef.current;
+    const parkingEl = svgContainer?.querySelector(`[data-parking-id="${parkingId}"]`);
 
-      if (!parkingElement || !containerElement || !svgElement) return;
+    if (!parkingEl || !container || !svgContainer) return;
 
-      const parkingRect = parkingElement.getBoundingClientRect();
-      const containerRect = containerElement.getBoundingClientRect();
+    // 일시적으로 transform 초기화해서 기준 위치 계산
+    const originalTransform = svgContainer.style.transform;
+    svgContainer.style.transform = "translate(0px, 0px) scale(1)";
+    svgContainer.getBoundingClientRect(); // 강제 리플로우
 
-      // 주차 위치 중심
-      const parkingCenterX = parkingRect.left + parkingRect.width / 2;
-      const parkingCenterY = parkingRect.top + parkingRect.height / 2;
+    // 컨테이너 중앙과 주차칸 중앙 사이의 거리 계산
+    const containerRect = container.getBoundingClientRect();
+    const parkingRect = parkingEl.getBoundingClientRect();
+    const distX = (containerRect.left + containerRect.width / 2) - (parkingRect.left + parkingRect.width / 2);
+    const distY = (containerRect.top + containerRect.height / 2) - (parkingRect.top + parkingRect.height / 2);
 
-      // 컨테이너 중심
-      const containerCenterX = containerRect.left + containerRect.width / 2;
-      const containerCenterY = containerRect.top + containerRect.height / 2;
+    svgContainer.style.transform = originalTransform;
 
-      // 주차 위치를 컨테이너 중심으로 이동시키기 위한 새 position 계산
-      const newX = position.x + (containerCenterX - parkingCenterX);
-      const newY = position.y + (containerCenterY - parkingCenterY);
-
-      setPosition({ x: newX, y: newY });
-    },
-    [zoom, position],
-  );
+    // 500% 확대 시 이동 거리 적용
+    const scale = ZOOM_MAX / 100;
+    setZoom(ZOOM_MAX);
+    setPosition({ x: distX * scale, y: distY * scale });
+  }, []);
 
   // SVG 주차 영역에 이벤트 바인딩
   useEffect(() => {
@@ -185,11 +185,11 @@ export function MapPage() {
   }, []);
 
   const handleZoomIn = () => {
-    setZoom((prev) => Math.min(prev + 10, 500));
+    setZoom((prev) => Math.min(prev + ZOOM_STEP, ZOOM_MAX));
   };
 
   const handleZoomOut = () => {
-    setZoom((prev) => Math.max(prev - 10, 50));
+    setZoom((prev) => Math.max(prev - ZOOM_STEP, ZOOM_MIN));
   };
 
   const handleZoomReset = () => {
@@ -219,11 +219,7 @@ export function MapPage() {
     [isMapDragging],
   );
 
-  const handleMapMouseUp = useCallback(() => {
-    setIsMapDragging(false);
-  }, []);
-
-  const handleMapMouseLeave = useCallback(() => {
+  const handleMapMouseEnd = useCallback(() => {
     setIsMapDragging(false);
   }, []);
 
@@ -235,9 +231,9 @@ export function MapPage() {
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (e.deltaY < 0) {
-        setZoom((prev) => Math.min(prev + 10, 500));
+        setZoom((prev) => Math.min(prev + ZOOM_STEP, ZOOM_MAX));
       } else {
-        setZoom((prev) => Math.max(prev - 10, 50));
+        setZoom((prev) => Math.max(prev - ZOOM_STEP, ZOOM_MIN));
       }
     };
 
@@ -249,7 +245,7 @@ export function MapPage() {
 
   return (
     <div className="flex h-full flex-col gap-5">
-      <h2 className="text-[28px] text-foreground font-bold">출차감지</h2>
+      <h2 className="text-[28px] text-foreground font-bold">지도</h2>
       {/* 상단 카드 리스트 */}
       <div className="flex items-center gap-3">
         {[
@@ -359,7 +355,7 @@ export function MapPage() {
                   }}
                 >
                   <div className="size-2.5 rotate-45 bg-primary" />
-                  <div className="-mt-[5px] rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
+                  <div className="-mt-1.25 rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
                     {formatTime(time[0])}
                   </div>
                 </div>
@@ -420,8 +416,8 @@ export function MapPage() {
           className="relative flex-1 overflow-hidden rounded-xl border bg-background"
           onMouseDown={handleMapMouseDown}
           onMouseMove={handleMapMouseMove}
-          onMouseUp={handleMapMouseUp}
-          onMouseLeave={handleMapMouseLeave}
+          onMouseUp={handleMapMouseEnd}
+          onMouseLeave={handleMapMouseEnd}
           style={{ cursor: isMapDragging ? "grabbing" : "grab" }}
         >
           {/* 지도 SVG 영역 */}
@@ -449,7 +445,7 @@ export function MapPage() {
               <div className="rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
                 {hoveredSpot.parkingId} (차량 있음)
               </div>
-              <div className="-mt-[5px] size-2.5 rotate-45 bg-primary" />
+              <div className="-mt-1.25 size-2.5 rotate-45 bg-primary" />
             </div>
           )}
 
@@ -459,7 +455,6 @@ export function MapPage() {
               variant="outline"
               size="icon"
               onClick={handleZoomIn}
-              className="bg-background"
             >
               <ZoomIn className="size-4" />
             </Button>
@@ -467,7 +462,6 @@ export function MapPage() {
               variant="outline"
               size="icon"
               onClick={handleZoomOut}
-              className="bg-background"
             >
               <ZoomOut className="size-4" />
             </Button>
@@ -475,7 +469,6 @@ export function MapPage() {
               variant="outline"
               size="icon"
               onClick={handleZoomReset}
-              className="bg-background"
             >
               <RotateCcw className="size-4" />
             </Button>
@@ -536,23 +529,17 @@ export function MapPage() {
             </div>
 
             {/* 촬영 정보 */}
-            <div className="flex justify-between items-center">
-              <div className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
-                <Camera className="size-4" />
-                <span>촬영 시간: {format(now, "HH:mm:ss")}</span>
-              </div>
-              <Separator orientation="vertical" className="h-3" />
-              <div className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
-                <File className="size-4" />
-                <span className="flex items-center">
-                  파일:&nbsp;<span className="truncate max-w-24">test</span>.jpg
-                </span>
-              </div>
-              <Separator orientation="vertical" className="h-3" />
-              <div className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
-                <Clock className="size-4" />
-                <span>TIME SLOT: {format(now, "HH:mm:ss")}</span>
-              </div>
+            <div className="flex justify-between items-center divide-x">
+              {[
+                { icon: Camera, content: `촬영 시간: ${format(now, "HH:mm:ss")}` },
+                { icon: File, content: <span className="flex items-center">파일:&nbsp;<span className="truncate max-w-24">test</span>.jpg</span> },
+                { icon: Clock, content: `TIME SLOT: ${format(now, "HH:mm:ss")}` },
+              ].map((item, index) => (
+                <div key={index} className="flex-1 flex justify-center items-center gap-2 text-sm text-muted-foreground leading-tight">
+                  <item.icon className="size-4" />
+                  <span>{item.content}</span>
+                </div>
+              ))}
             </div>
           </div>
         </DialogContent>

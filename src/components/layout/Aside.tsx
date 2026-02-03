@@ -12,8 +12,8 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: <Map className="size-5" />, label: "지도", href: "/map" },
   { icon: <Clock className="size-5" />, label: "타임라인", href: "/timeline" },
+  { icon: <Map className="size-5" />, label: "지도", href: "/map" },
   {
     icon: <LayoutGrid className="size-5" />,
     label: "커버리지",
@@ -67,7 +67,7 @@ export function Aside() {
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  "inline-flex items-center justify-center size-9 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-accent",
+                  "inline-flex items-center justify-center size-8 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-accent",
                   isActive && "text-foreground",
                 )
               }
