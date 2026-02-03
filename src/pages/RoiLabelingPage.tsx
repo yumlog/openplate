@@ -10,6 +10,7 @@ import {
   Info,
   Crosshair,
 } from "lucide-react";
+import cctvImage from "@/assets/cctv.jpg";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -189,7 +190,7 @@ export function RoiLabelingPage() {
           <div className="relative flex-1 overflow-hidden rounded-lg border bg-accent">
             {/* CCTV 이미지 */}
             <img
-              src="/src/assets/cctv.jpg"
+              src={cctvImage}
               alt="CCTV"
               className="h-full w-full object-contain"
             />
