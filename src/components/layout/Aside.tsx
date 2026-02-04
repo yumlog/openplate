@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Tag,
   Image,
+  PencilRuler,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,11 @@ const menuItems: MenuItem[] = [
     icon: <Tag className="size-5" />,
     label: "ROI 라벨링",
     href: "/roi-labeling",
+  },
+  {
+    icon: <PencilRuler className="size-5" />,
+    label: "ROI 에디터",
+    href: "/roi-editor",
   },
   {
     icon: <Image className="size-5" />,

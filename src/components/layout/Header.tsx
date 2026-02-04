@@ -10,6 +10,7 @@ const routeLabels: Record<string, string> = {
   "/coverage": "커버리지",
   "/roi-labeling": "ROI 라벨링",
   "/reference-builder": "Reference 빌더",
+  "/roi-editor": "ROI 에디터",
 };
 
 export function Header() {

@@ -92,6 +92,9 @@ export function ReferenceBuilderPage() {
 
   const now = new Date();
 
+  const currentCctvLabel =
+    cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
+
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(1, prev - 1));
   };
@@ -248,33 +251,42 @@ export function ReferenceBuilderPage() {
         </div>
 
         {/* 우측 CCTV 이미지 영역 */}
-        <div className="relative flex-1 overflow-hidden rounded-xl border bg-background">
-          {/* CCTV 이미지 */}
-          <img
-            src={cctvImage}
-            alt="CCTV"
-            className="h-full w-full object-contain"
-          />
-
-          {/* 우측 상단: 현재 시간 */}
-          <div className="absolute right-3 top-3 flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm text-foreground tabular-nums">
-            {format(now, "HH:mm:ss")}
+        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
+          <div className="flex items-center">
+            <h3 className="text-base font-semibold text-foreground">
+              {currentCctvLabel}
+            </h3>
           </div>
 
-          {/* 좌측 하단: 조작 안내 */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border bg-background px-3 py-2 text-sm text-foreground">
-            <span className="flex items-center gap-1.5">
-              <Badge>←</Badge>
-              <Badge>→</Badge>이미지이동
-            </span>
-            <span className="text-muted-foreground">|</span>
-            <span className="flex items-center gap-1.5">
-              <Badge>클릭</Badge> 빈 슬롯 수집
-            </span>
-            <span className="text-muted-foreground">|</span>
-            <span className="flex items-center gap-1.5">
-              <Badge>Shift+클릭</Badge> 수집 취소
-            </span>
+          {/* 이미지 컨테이너 */}
+          <div className="relative flex-1 overflow-hidden rounded-lg border">
+            {/* CCTV 이미지 */}
+            <img
+              src={cctvImage}
+              alt="CCTV"
+              className="h-full w-full object-contain"
+            />
+
+            {/* 우측 상단: 현재 시간 */}
+            <div className="absolute right-3 top-3 flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm text-foreground tabular-nums">
+              {format(now, "HH:mm:ss")}
+            </div>
+
+            {/* 좌측 하단: 조작 안내 */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border bg-background px-3 py-2 text-sm text-foreground">
+              <span className="flex items-center gap-1.5">
+                <Badge>←</Badge>
+                <Badge>→</Badge>이미지이동
+              </span>
+              <span className="text-muted-foreground">|</span>
+              <span className="flex items-center gap-1.5">
+                <Badge>클릭</Badge> 빈 슬롯 수집
+              </span>
+              <span className="text-muted-foreground">|</span>
+              <span className="flex items-center gap-1.5">
+                <Badge>Shift+클릭</Badge> 수집 취소
+              </span>
+            </div>
           </div>
         </div>
       </div>

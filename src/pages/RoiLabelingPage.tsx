@@ -27,6 +27,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -171,8 +172,10 @@ export function RoiLabelingPage() {
         <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h3 className="text-base font-semibold text-foreground">
-                {currentCctvLabel} / 방향{selectedDirection} (
+              <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                {currentCctvLabel}
+                <Separator orientation="vertical" className="h-3" />
+                방향{selectedDirection} (
                 {selectedDirection === 1 ? "상단" : "하단"})
               </h3>
               <span className="text-sm text-muted-foreground">00:00:00</span>
