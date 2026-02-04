@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import cctvImage from "@/assets/cctv.jpg";
 import MapSvg from "@/assets/map.svg?react";
 
@@ -51,6 +52,8 @@ export function CoveragePage() {
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "";
   const selectedIds = [...direction1Selection, ...direction2Selection];
+  const unmatchedCount =
+    getSvg()?.querySelectorAll("[data-unmatched-overlay]").length ?? 0;
 
   // SVG 초기화: CCTV 목록 추출
   useEffect(() => {
@@ -200,6 +203,12 @@ export function CoveragePage() {
     }
   };
 
+  const clearOverlays = () => {
+    getSvg()
+      ?.querySelectorAll("[data-unmatched-overlay]")
+      .forEach((el) => el.remove());
+  };
+
   const handleReset = () => {
     const svg = getSvg();
     if (svg) {
@@ -208,6 +217,7 @@ export function CoveragePage() {
         if (el)
           el.setAttribute("fill", originalColorsRef.current.get(id) || "");
       });
+      clearOverlays();
     }
     setDirection1Selection([]);
     setDirection2Selection([]);
@@ -218,19 +228,29 @@ export function CoveragePage() {
     const svg = getSvg();
     if (!svg) return;
 
-    svg.querySelectorAll("[data-parking-id]").forEach((el) => {
-      const id = el.getAttribute("data-parking-id");
-      if (!id || selectedIds.includes(id)) return;
+    if (showUnmatched) {
+      clearOverlays();
+    } else {
+      svg.querySelectorAll("[data-parking-id]").forEach((el) => {
+        const id = el.getAttribute("data-parking-id");
+        if (!id || selectedIds.includes(id)) return;
 
-      if (!showUnmatched) {
-        if (!originalColorsRef.current.has(id)) {
-          originalColorsRef.current.set(id, el.getAttribute("fill") || "");
-        }
-        el.setAttribute("fill", "#ffdf20");
-      } else {
-        el.setAttribute("fill", originalColorsRef.current.get(id) || "");
-      }
-    });
+        const overlay = el.cloneNode(false) as SVGElement;
+        Object.entries({
+          fill: "#FEF08A",
+          "fill-opacity": "0",
+          stroke: "#FEF08A",
+          "stroke-width": "1.5",
+          rx: "2",
+          ry: "2",
+          "data-unmatched-overlay": id,
+          "pointer-events": "none",
+        }).forEach(([k, v]) => overlay.setAttribute(k, v));
+        overlay.removeAttribute("data-parking-id");
+        overlay.removeAttribute("id");
+        el.insertAdjacentElement("afterend", overlay);
+      });
+    }
     setShowUnmatched(!showUnmatched);
   };
 
@@ -335,9 +355,19 @@ export function CoveragePage() {
 
         {/* 우측: 지도-주차칸 선택 */}
         <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
-          <h3 className="text-base font-semibold text-foreground">
-            주차칸 선택
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+              주차칸 선택
+            </h3>
+            {showUnmatched && (
+              <>
+                <Separator orientation="vertical" className="h-3" />
+                <span className="text-sm font-normal text-muted-foreground">
+                  미매칭: {unmatchedCount}개
+                </span>
+              </>
+            )}
+          </div>
 
           <div className="flex gap-2">
             <Button
@@ -408,34 +438,31 @@ export function CoveragePage() {
           </div>
 
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground tabular-nums">방향1:</span>
-              <div className="flex flex-wrap gap-1">
-                {direction1Selection.length > 0 ? (
-                  direction1Selection.map((id) => (
-                    <Badge key={id} className="bg-[#ad46ff] tabular-nums">
-                      {id}
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge variant="outline">미선택</Badge>
-                )}
+            {[
+              { label: "방향1", ids: direction1Selection, color: "#ad46ff" },
+              { label: "방향2", ids: direction2Selection, color: "#00d5be" },
+            ].map(({ label, ids, color }) => (
+              <div key={label} className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground tabular-nums">
+                  {label}:
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {ids.length > 0 ? (
+                    ids.map((id) => (
+                      <Badge
+                        key={id}
+                        className="tabular-nums"
+                        style={{ backgroundColor: color }}
+                      >
+                        {id}
+                      </Badge>
+                    ))
+                  ) : (
+                    <Badge variant="outline">미선택</Badge>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground tabular-nums">방향2:</span>
-              <div className="flex flex-wrap gap-1">
-                {direction2Selection.length > 0 ? (
-                  direction2Selection.map((id) => (
-                    <Badge key={id} className="bg-[#00d5be] tabular-nums">
-                      {id}
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge variant="outline">미선택</Badge>
-                )}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
