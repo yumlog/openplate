@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Trash2, Save, Image, ImageOff, X } from "lucide-react";
+import { Download, Trash2, Save, X } from "lucide-react";
 import cctvImage from "@/assets/cctv.jpg";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
