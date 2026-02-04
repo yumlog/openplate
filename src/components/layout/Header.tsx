@@ -11,6 +11,7 @@ const routeLabels: Record<string, string> = {
   "/roi-labeling": "ROI 라벨링",
   "/reference-builder": "Reference 빌더",
   "/roi-editor": "ROI 에디터",
+  "/spot-editor": "SPOT 에디터",
 };
 
 export function Header() {

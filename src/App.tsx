@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { Layout } from "@/components/layout"
-import { HomePage, MapPage, TimelinePage, CoveragePage, RoiLabelingPage, ReferenceBuilderPage, RoiEditorPage } from "@/pages"
+import { HomePage, MapPage, TimelinePage, CoveragePage, RoiLabelingPage, ReferenceBuilderPage, RoiEditorPage, SpotEditorPage } from "@/pages"
 
 function App() {
   return (
@@ -14,6 +14,7 @@ function App() {
           <Route path="/roi-labeling" element={<RoiLabelingPage />} />
           <Route path="/reference-builder" element={<ReferenceBuilderPage />} />
           <Route path="/roi-editor" element={<RoiEditorPage />} />
+          <Route path="/spot-editor" element={<SpotEditorPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>

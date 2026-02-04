@@ -9,6 +9,7 @@ import {
   Tag,
   Image,
   PencilRuler,
+  CircleDot,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,11 @@ const menuItems: MenuItem[] = [
     icon: <Image className="size-5" />,
     label: "Reference 빌더",
     href: "/reference-builder",
+  },
+  {
+    icon: <CircleDot className="size-5" />,
+    label: "SPOT 에디터",
+    href: "/spot-editor",
   },
 ];
 

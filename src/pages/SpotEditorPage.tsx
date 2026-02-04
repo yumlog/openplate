@@ -1,8 +1,17 @@
 import { useState } from "react";
-import { Download, Trash2, Save } from "lucide-react";
+import {
+  Download,
+  Trash2,
+  Save,
+  Info,
+  CircleDot,
+  RotateCcw,
+} from "lucide-react";
 import cctvImage from "@/assets/cctv.jpg";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -10,6 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
 const floorOptions = [
@@ -25,7 +39,7 @@ const cctvOptions = [
   { value: "4", label: "CCTV 4" },
 ];
 
-const roiList = [
+const slotList = [
   "P230",
   "P231",
   "P232",
@@ -43,12 +57,14 @@ const roiList = [
   "P244",
 ];
 
-export function RoiEditorPage() {
+export function SpotEditorPage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");
   const [selectedCctv, setSelectedCctv] = useState("1");
   const [isInpainted, setIsInpainted] = useState(true);
-  const [selectedDirection] = useState(1);
-  const [selectedSlot] = useState("P230");
+  const [selectedDirection, setSelectedDirection] = useState<1 | 2>(1);
+  const [selectedSlot, setSelectedSlot] = useState("P230");
+  const [radius, setRadius] = useState([25]);
+  const [isDragging, setIsDragging] = useState(false);
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
@@ -65,13 +81,21 @@ export function RoiEditorPage() {
     console.log("서버에 저장");
   };
 
-  const handleDeleteRoi = (roiId: string) => {
-    console.log("ROI 삭제:", roiId);
+  const handleDeleteSlot = (slotId: string) => {
+    console.log("슬롯 삭제:", slotId);
+  };
+
+  const handleAddSpot = () => {
+    console.log("현재 위치에 SPOT 추가");
+  };
+
+  const handleResetFromRoi = () => {
+    console.log("ROI에서 초기화");
   };
 
   return (
     <div className="flex h-full flex-col gap-5">
-      <h2 className="text-[28px] text-foreground font-bold">ROI 에디터</h2>
+      <h2 className="text-[28px] text-foreground font-bold">SPOT 에디터</h2>
 
       {/* 상단 검색 폼 */}
       <div className="flex items-center gap-2">
@@ -141,25 +165,25 @@ export function RoiEditorPage() {
               onClick={() => setIsInpainted(false)}
               className="flex-1"
             >
-              원본 CCTV
+              Live
             </Button>
           </div>
 
-          {/* ROI 목록 */}
+          {/* 슬롯 목록 */}
           <div className="flex min-h-0 flex-1 flex-col gap-2">
             <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
-              ROI 목록 ({roiList.length})
+              슬롯 목록 ({slotList.length})
             </h3>
             <div className="flex flex-col gap-2 overflow-y-auto">
-              {roiList.map((roi) => (
-                <div key={roi} className="flex items-center justify-between">
+              {slotList.map((slot) => (
+                <div key={slot} className="flex items-center justify-between">
                   <span className="text-sm text-primary font-bold tabular-nums">
-                    {roi}
+                    {slot}
                   </span>
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    onClick={() => handleDeleteRoi(roi)}
+                    onClick={() => handleDeleteSlot(slot)}
                     className="text-secondary-foreground hover:bg-transparent"
                   >
                     <Trash2 className="size-4" />
@@ -172,15 +196,85 @@ export function RoiEditorPage() {
 
         {/* 우측 CCTV 이미지 영역 */}
         <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
-          <div className="flex flex-col gap-1 px-4 pt-5">
+          <div className="flex flex-col gap-3 px-4 pt-5">
             <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
               {currentCctvLabel}
               <Separator orientation="vertical" className="h-3" />
-              방향{selectedDirection} (
-              {selectedDirection === 1 ? "상단" : "하단"})
+              방향1 (상단)
               <Separator orientation="vertical" className="h-3" />
-              {selectedSlot}
+              P230
             </h3>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={selectedDirection === 1 ? "default" : "outline"}
+                  onClick={() => setSelectedDirection(1)}
+                >
+                  방향1 선택
+                </Button>
+                <Button
+                  variant={selectedDirection === 2 ? "default" : "outline"}
+                  onClick={() => setSelectedDirection(2)}
+                >
+                  방향2 선택
+                </Button>
+                <Input
+                  value={selectedSlot}
+                  onChange={(e) => setSelectedSlot(e.target.value)}
+                  className="w-24"
+                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Info className="size-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-64">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-sm">사용법:</h4>
+                      <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                        <li>클릭: 현재 슬롯에 SPOT 추가</li>
+                        <li>드래그: 선택된 SPOT 이동</li>
+                        <li>휠: 선택된 SPOT 반경 조절</li>
+                        <li>Delete: 선택된 SPOT 삭제</li>
+                        <li>ESC: 선택 해제</li>
+                      </ol>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground">SPOT 반경</span>
+                <div className="relative">
+                  <Slider
+                    value={radius}
+                    onValueChange={(value) => {
+                      setRadius(value);
+                      setIsDragging(true);
+                    }}
+                    onValueCommit={() => setIsDragging(false)}
+                    min={0}
+                    max={50}
+                    step={1}
+                    className="w-48"
+                  />
+                  {isDragging && (
+                    <div
+                      className="absolute z-1 top-4.5 flex flex-col items-center"
+                      style={{
+                        left: `calc(${(radius[0] / 50) * 100}% + ${8 - (radius[0] / 50) * 16}px)`,
+                        transform: "translateX(-50%)",
+                      }}
+                    >
+                      <div className="size-2.5 rotate-45 bg-primary" />
+                      <div className="-mt-1.25 rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
+                        {radius[0]}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* 이미지 컨테이너 */}
@@ -191,6 +285,28 @@ export function RoiEditorPage() {
               alt="CCTV"
               className="h-full w-full object-contain"
             />
+
+            {/* 컨트롤 버튼 */}
+            <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                title="현재 위치에 SPOT 추가"
+                onClick={handleAddSpot}
+                className="bg-background/80 backdrop-blur-[1px]"
+              >
+                <CircleDot className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                title="ROI에서 초기화"
+                onClick={handleResetFromRoi}
+                className="bg-background/80 backdrop-blur-[1px]"
+              >
+                <RotateCcw className="size-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
