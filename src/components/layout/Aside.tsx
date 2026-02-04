@@ -13,6 +13,12 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface MenuItem {
@@ -157,18 +163,24 @@ export function Aside() {
       )}
 
       {/* 토글 버튼 - 고정 위치 */}
-      <Button
-        variant="outline"
-        size="icon-sm"
-        className="fixed left-4 bottom-4 z-50 rounded-full text-muted-foreground"
-        onClick={() => setIsModalOpen(!isModalOpen)}
-      >
-        {isModalOpen ? (
-          <ArrowLeft className="size-6" />
-        ) : (
-          <ArrowRight className="size-6" />
-        )}
-      </Button>
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              className="fixed left-4 bottom-4 z-50 size-8 rounded-full text-muted-foreground"
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            >
+              {isModalOpen ? (
+                <ArrowLeft className="size-6" />
+              ) : (
+                <ArrowRight className="size-6" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent position="right">더보기</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </>
   );
 }

@@ -29,6 +29,12 @@ import {
 } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -68,6 +74,7 @@ export function RoiLabelingPage() {
   const [selectedCctv, setSelectedCctv] = useState("1");
   const [selectedDirection, setSelectedDirection] = useState<1 | 2>(1);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [isInfoPopoverOpen, setIsInfoPopoverOpen] = useState(false);
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "";
@@ -205,58 +212,90 @@ export function RoiLabelingPage() {
             />
 
             {/* 우측 상단 컨트롤 버튼 */}
-            <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                title="새 ROI 그리기"
-                className="bg-background/80 backdrop-blur-[1px]"
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                title="그리기 취소"
-                className="bg-background/80 backdrop-blur-[1px]"
-              >
-                <PencilOff className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                title="점 취소"
-                className="bg-background/80 backdrop-blur-[1px]"
-              >
-                <Undo2 className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                title="ROI 삭제"
-                className="bg-background/80 backdrop-blur-[1px]"
-              >
-                <Trash2 className="size-4" />
-              </Button>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="icon" title="사용법">
-                    <Info className="size-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-64">
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-sm">사용법:</h4>
-                    <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                      <li>주차칸을 선택합니다</li>
-                      <li>이미지에서 4개의 꼭짓점을 클릭합니다</li>
-                      <li>좌상단 → 우상단 → 우하단 → 좌하단 순서</li>
-                      <li>4점이 완성되면 자동 저장됩니다</li>
-                    </ol>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+            <TooltipProvider delayDuration={0}>
+              <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-background/80 backdrop-blur-[1px]"
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">새 ROI 그리기</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-background/80 backdrop-blur-[1px]"
+                    >
+                      <PencilOff className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">그리기 취소</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-background/80 backdrop-blur-[1px]"
+                    >
+                      <Undo2 className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">점 취소</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-background/80 backdrop-blur-[1px]"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">ROI 삭제</TooltipContent>
+                </Tooltip>
+                <Tooltip open={isInfoPopoverOpen ? false : undefined}>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Popover
+                        open={isInfoPopoverOpen}
+                        onOpenChange={setIsInfoPopoverOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="bg-background/80 backdrop-blur-[1px]"
+                          >
+                            <Info className="size-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" className="w-64">
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">사용법:</h4>
+                            <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                              <li>주차칸을 선택합니다</li>
+                              <li>이미지에서 4개의 꼭짓점을 클릭합니다</li>
+                              <li>좌상단 → 우상단 → 우하단 → 좌하단 순서</li>
+                              <li>4점이 완성되면 자동 저장됩니다</li>
+                            </ol>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">사용법</TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
 
             {/* 좌측 하단 범례 */}
             <div className="absolute bottom-5 left-4 flex flex-col gap-1 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2">

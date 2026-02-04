@@ -25,6 +25,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -65,6 +71,7 @@ export function SpotEditorPage() {
   const [selectedSlot, setSelectedSlot] = useState("P230");
   const [radius, setRadius] = useState([25]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isInfoPopoverOpen, setIsInfoPopoverOpen] = useState(false);
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
@@ -223,25 +230,6 @@ export function SpotEditorPage() {
                   onChange={(e) => setSelectedSlot(e.target.value)}
                   className="w-24"
                 />
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Info className="size-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align="end" className="w-64">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">사용법:</h4>
-                      <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                        <li>클릭: 현재 슬롯에 SPOT 추가</li>
-                        <li>드래그: 선택된 SPOT 이동</li>
-                        <li>휠: 선택된 SPOT 반경 조절</li>
-                        <li>Delete: 선택된 SPOT 삭제</li>
-                        <li>ESC: 선택 해제</li>
-                      </ol>
-                    </div>
-                  </PopoverContent>
-                </Popover>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground">SPOT 반경</span>
@@ -287,26 +275,71 @@ export function SpotEditorPage() {
             />
 
             {/* 컨트롤 버튼 */}
-            <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                title="현재 위치에 SPOT 추가"
-                onClick={handleAddSpot}
-                className="bg-background/80 backdrop-blur-[1px]"
-              >
-                <CircleDot className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                title="ROI에서 초기화"
-                onClick={handleResetFromRoi}
-                className="bg-background/80 backdrop-blur-[1px]"
-              >
-                <RotateCcw className="size-4" />
-              </Button>
-            </div>
+            <TooltipProvider delayDuration={0}>
+              <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleAddSpot}
+                      className="bg-background/80 backdrop-blur-[1px]"
+                    >
+                      <CircleDot className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">
+                    현재 위치에 SPOT 추가
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleResetFromRoi}
+                      className="bg-background/80 backdrop-blur-[1px]"
+                    >
+                      <RotateCcw className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">ROI에서 초기화</TooltipContent>
+                </Tooltip>
+                <Tooltip open={isInfoPopoverOpen ? false : undefined}>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Popover
+                        open={isInfoPopoverOpen}
+                        onOpenChange={setIsInfoPopoverOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="bg-background/80 backdrop-blur-[1px]"
+                          >
+                            <Info className="size-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" className="w-64">
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">사용법:</h4>
+                            <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                              <li>클릭: 현재 슬롯에 SPOT 추가</li>
+                              <li>드래그: 선택된 SPOT 이동</li>
+                              <li>휠: 선택된 SPOT 반경 조절</li>
+                              <li>Delete: 선택된 SPOT 삭제</li>
+                              <li>ESC: 선택 해제</li>
+                            </ol>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent position="left">사용법</TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
           </div>
         </div>
       </div>
