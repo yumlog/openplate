@@ -186,9 +186,9 @@ export function ReferenceBuilderPage() {
         {/* 좌측 조회 폼 */}
         <div className="flex w-64 shrink-0 flex-col gap-5 overflow-hidden rounded-xl border bg-background px-4 py-5">
           {/* 수집된 빈 슬롯 */}
-          <div className="shrink-0 space-y-3">
+          <div className="shrink-0">
             <div className="flex items-center gap-1">
-              <h3 className="text-base text-foreground font-bold">
+              <h3 className="text-base text-foreground font-bold leading-tight">
                 수집된 빈 슬롯
               </h3>
               <Popover>
@@ -205,13 +205,15 @@ export function ReferenceBuilderPage() {
               </Popover>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex flex-col items-center gap-1 border rounded-lg p-2">
-                <span className="font-bold">{collectedCount}</span>
-                <span className="text-xs text-muted-foreground">수집됨</span>
+            <div className="grid grid-cols-2 gap-2 mt-5 mb-3">
+              <div className="h-15 flex flex-col justify-center items-center bg-primary rounded-lg px-4 py-2">
+                <span className="text-sm text-secondary font-medium">
+                  {collectedCount}
+                </span>
+                <span className="text-xs text-background">수집됨</span>
               </div>
-              <div className="flex flex-col items-center gap-1 border rounded-lg p-2">
-                <span className="font-bold">{totalRoi}</span>
+              <div className="h-15 flex flex-col justify-center items-center border rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">{totalRoi}</span>
                 <span className="text-xs text-muted-foreground">전체 ROI</span>
               </div>
             </div>
@@ -220,27 +222,29 @@ export function ReferenceBuilderPage() {
           </div>
 
           {/* 주차칸 목록 */}
-          <div className="flex min-h-0 flex-1 flex-col gap-3">
-            <h3 className="shrink-0 text-base text-foreground font-bold">
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
+            <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
               주차칸 목록
             </h3>
-            <div className="flex flex-col gap-1 overflow-y-auto">
+            <div className="flex flex-col gap-2 overflow-y-auto">
               {collectedSlots.map((slot) => (
                 <div
                   key={slot.id}
-                  className="flex items-center justify-between rounded-lg border bg-muted-foreground px-3 py-2"
+                  className="flex items-center justify-between"
                 >
-                  <span className="text-sm text-secondary font-bold tabular-nums">
-                    {slot.id}
-                  </span>
-                  <span className="text-sm text-background tabular-nums">
-                    {slot.time}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-primary font-bold tabular-nums">
+                      {slot.id}
+                    </span>
+                    <span className="text-sm text-muted-foreground tabular-nums">
+                      {slot.time}
+                    </span>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon-xs"
                     onClick={() => handleDeleteSlot(slot.id)}
-                    className="text-background hover:text-destructive hover:bg-transparent"
+                    className="text-secondary-foreground hover:bg-transparent"
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -251,15 +255,18 @@ export function ReferenceBuilderPage() {
         </div>
 
         {/* 우측 CCTV 이미지 영역 */}
-        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
-          <div className="flex items-center">
-            <h3 className="text-base font-semibold text-foreground">
+        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
+          <div className="flex flex-col gap-1 px-4 pt-5">
+            <h3 className="text-base font-bold text-foreground leading-tight">
               {currentCctvLabel}
             </h3>
+            <span className="text-sm text-muted-foreground tabular-nums leading-tight">
+              {format(now, "HH:mm:ss")}
+            </span>
           </div>
 
           {/* 이미지 컨테이너 */}
-          <div className="relative flex-1 overflow-hidden rounded-lg border">
+          <div className="relative flex-1 overflow-hidden">
             {/* CCTV 이미지 */}
             <img
               src={cctvImage}
@@ -267,13 +274,8 @@ export function ReferenceBuilderPage() {
               className="h-full w-full object-contain"
             />
 
-            {/* 우측 상단: 현재 시간 */}
-            <div className="absolute right-3 top-3 flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm text-foreground tabular-nums">
-              {format(now, "HH:mm:ss")}
-            </div>
-
             {/* 좌측 하단: 조작 안내 */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border bg-background px-3 py-2 text-sm text-foreground">
+            <div className="absolute bottom-5 left-4 flex items-center gap-3 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2 text-sm text-foreground">
               <span className="flex items-center gap-1.5">
                 <Badge>←</Badge>
                 <Badge>→</Badge>이미지이동

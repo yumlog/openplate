@@ -387,34 +387,38 @@ export function MapPage() {
       {/* 메인 영역: 조회 폼 + 지도 */}
       <div className="flex flex-1 gap-3 overflow-hidden">
         {/* 좌측 조회 폼 */}
-        <div className="flex w-64 shrink-0 flex-col gap-5 overflow-y-auto rounded-xl border bg-background px-4 py-5">
+        <div className="flex w-64 shrink-0 flex-col gap-5 overflow-hidden rounded-xl border bg-background px-4 py-5">
           {/* 조회 결과 */}
           <div className="space-y-1">
-            <h3 className="text-base text-foreground font-bold">입주민 0006</h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <h3 className="text-base text-foreground font-bold leading-tight">
+              입주민 0006
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
               <span>010-1234-5678</span>
               <Separator orientation="vertical" className="h-2" />
               <span>1101-0201</span>
             </div>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm text-foreground">보유 차량</p>
-            {sampleParkingData.map((spot) => (
-              <Button
-                key={spot.parkingId}
-                variant="outline"
-                className="h-auto w-full flex-col items-start gap-0 px-4 py-3 bg-muted-foreground hover:bg-muted-foreground/90"
-                onClick={() => moveToParkingSpot(spot.parkingId)}
-              >
-                <p className="text-sm text-secondary font-bold">
-                  {spot.plateNumber}
-                </p>
-                <p className="text-sm text-background">{spot.location}</p>
-                <p className="mt-2 text-xs text-background/80">
-                  {formatDateTime(spot.parkedAt)}
-                </p>
-              </Button>
-            ))}
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
+            <p className="text-sm text-foreground leading-tight">보유 차량</p>
+            <div className="flex flex-col gap-2 overflow-y-auto">
+              {sampleParkingData.map((spot) => (
+                <Button
+                  key={spot.parkingId}
+                  variant="outline"
+                  className="h-auto w-full shrink-0 flex-col items-start gap-0 px-4 py-3 bg-muted-foreground hover:bg-muted-foreground/90"
+                  onClick={() => moveToParkingSpot(spot.parkingId)}
+                >
+                  <p className="text-sm text-secondary font-bold">
+                    {spot.plateNumber}
+                  </p>
+                  <p className="text-sm text-background">{spot.location}</p>
+                  <p className="mt-2 text-xs text-background/80">
+                    {formatDateTime(spot.parkedAt)}
+                  </p>
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -458,23 +462,38 @@ export function MapPage() {
           )}
 
           {/* 우측 상단 컨트롤 */}
-          <div className="absolute right-3 top-3 flex gap-2">
-            <Button variant="outline" size="icon" onClick={handleZoomIn}>
+          <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleZoomIn}
+              className="bg-background/80 backdrop-blur-[1px]"
+            >
               <ZoomIn className="size-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={handleZoomOut}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleZoomOut}
+              className="bg-background/80 backdrop-blur-[1px]"
+            >
               <ZoomOut className="size-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={handleZoomReset}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleZoomReset}
+              className="bg-background/80 backdrop-blur-[1px]"
+            >
               <RotateCcw className="size-4" />
             </Button>
-            <div className="flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
+            <div className="flex h-9 items-center justify-center rounded-md border bg-background/80 backdrop-blur-[1px] px-2 text-center text-sm text-foreground tabular-nums">
               {zoom}%
             </div>
           </div>
 
           {/* 좌측 하단 범례 */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
+          <div className="absolute bottom-5 left-4 flex flex-col gap-1 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2">
             {[
               { color: "#55D400", label: "전기차" },
               { color: "#FF9F9F", label: "임산부" },
@@ -484,7 +503,7 @@ export function MapPage() {
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1">
                 <div
-                  className="size-3 rounded-full"
+                  className="size-2 rounded-full"
                   style={{ backgroundColor: item.color }}
                 />
                 <span className="text-xs text-foreground">{item.label}</span>

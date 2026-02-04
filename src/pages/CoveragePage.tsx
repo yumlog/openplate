@@ -124,19 +124,50 @@ export function CoveragePage() {
     return () => container.removeEventListener("wheel", handleWheel);
   }, []);
 
-  // 주차칸 클릭/호버 이벤트
+  // CSS 스타일 주입 (마운트 시 한 번만)
+  useEffect(() => {
+    const styleId = "parking-style";
+    if (document.getElementById(styleId)) return;
+
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+      [data-parking-id] { cursor: pointer; pointer-events: auto; }
+      [data-parking-id]:hover { opacity: 0.85 !important; }
+      @keyframes unmatched-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+      [data-unmatched-overlay] { animation: unmatched-blink 2s ease-in-out infinite; }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
+  // 주차칸 클릭 이벤트 및 opacity 조절
   useEffect(() => {
     const svg = getSvg();
     if (!svg) return;
 
+    const elements = svg.querySelectorAll("[data-parking-id]");
+    const selected = [...direction1Selection, ...direction2Selection];
+
+    // opacity 조절
+    elements.forEach((el) => {
+      const id = el.getAttribute("data-parking-id");
+      if (!id) return;
+      (el as HTMLElement).style.opacity =
+        selected.length > 0 && !selected.includes(id) ? "0.7" : "1";
+    });
+
+    // 클릭 이벤트
     const handleClick = (e: Event) => {
       const target = e.currentTarget as SVGElement;
       const id = target.getAttribute("data-parking-id");
       if (!id) return;
 
       const fill = target.getAttribute("fill") || "";
-      const isDir1 = fill === "#ad46ff";
-      const isDir2 = fill === "#00d5be";
+      const isDir1 = fill === "#FF8C00";
+      const isDir2 = fill === "#262626";
 
       if (isDir1 || isDir2) {
         target.setAttribute("fill", originalColorsRef.current.get(id) || "");
@@ -152,34 +183,18 @@ export function CoveragePage() {
 
       target.setAttribute(
         "fill",
-        selectedDirection === 1 ? "#ad46ff" : "#00d5be",
+        selectedDirection === 1 ? "#FF8C00" : "#262626",
       );
+
       (selectedDirection === 1
         ? setDirection1Selection
         : setDirection2Selection)((prev) => [...prev, id]);
     };
 
-    const handleEnter = (e: Event) =>
-      ((e.currentTarget as SVGElement).style.opacity = "0.8");
-    const handleLeave = (e: Event) =>
-      ((e.currentTarget as SVGElement).style.opacity = "1");
-
-    const elements = svg.querySelectorAll("[data-parking-id]");
-    elements.forEach((el) => {
-      (el as HTMLElement).style.cursor = "pointer";
-      (el as HTMLElement).style.pointerEvents = "auto";
-      el.addEventListener("click", handleClick);
-      el.addEventListener("mouseenter", handleEnter);
-      el.addEventListener("mouseleave", handleLeave);
-    });
-
+    elements.forEach((el) => el.addEventListener("click", handleClick));
     return () =>
-      elements.forEach((el) => {
-        el.removeEventListener("click", handleClick);
-        el.removeEventListener("mouseenter", handleEnter);
-        el.removeEventListener("mouseleave", handleLeave);
-      });
-  }, [selectedDirection]);
+      elements.forEach((el) => el.removeEventListener("click", handleClick));
+  }, [selectedDirection, direction1Selection, direction2Selection]);
 
   const handleMapMouseDown = (e: React.MouseEvent) => {
     setIsMapDragging(true);
@@ -238,7 +253,7 @@ export function CoveragePage() {
         const overlay = el.cloneNode(false) as SVGElement;
         Object.entries({
           fill: "#FEF08A",
-          "fill-opacity": "0",
+          "fill-opacity": "0.4",
           stroke: "#FEF08A",
           "stroke-width": "1.5",
           rx: "2",
@@ -313,14 +328,6 @@ export function CoveragePage() {
         </Button>
 
         <Button
-          variant={showUnmatched ? "default" : "outline"}
-          onClick={handleToggleUnmatched}
-        >
-          <EyeOff className="size-4" />
-          미매칭 표시
-        </Button>
-
-        <Button
           onClick={() =>
             console.log("저장:", { direction1Selection, direction2Selection })
           }
@@ -333,8 +340,8 @@ export function CoveragePage() {
       {/* 하단 컨텐츠 */}
       <div className="flex flex-1 gap-3 overflow-hidden">
         {/* 좌측: CCTV 이미지 */}
-        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
-          <h3 className="text-base font-semibold text-foreground">
+        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background px-4 py-5">
+          <h3 className="text-base font-bold text-foreground leading-tight">
             {currentCctvLabel}
           </h3>
 
@@ -342,21 +349,21 @@ export function CoveragePage() {
             <img
               src={cctvImage}
               alt="CCTV 이미지"
-              className="w-full rounded-lg border"
+              className="w-full rounded-lg"
             />
-            <span className="absolute top-3 left-3 flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
+            <span className="absolute top-2 left-2 flex items-center justify-center rounded-sm bg-primary/80 px-2 py-1 text-center text-xs text-secondary tabular-nums">
               방향1 (상단)
             </span>
-            <span className="absolute top-[calc(50%+12px)] left-3 flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
+            <span className="absolute top-[calc(50%+8px)] left-2 flex items-center justify-center rounded-sm bg-primary/80 px-2 py-1 text-center text-xs text-secondary tabular-nums">
               방향2 (하단)
             </span>
           </div>
         </div>
 
         {/* 우측: 지도-주차칸 선택 */}
-        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
+        <div className="flex flex-1 flex-col rounded-xl border bg-background px-4 py-5">
           <div className="flex items-center gap-2">
-            <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
               주차칸 선택
             </h3>
             {showUnmatched && (
@@ -369,20 +376,25 @@ export function CoveragePage() {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-5 mb-4">
             <Button
               variant={selectedDirection === 1 ? "default" : "outline"}
               onClick={() => setSelectedDirection(1)}
-              className="flex-1"
             >
-              방향1
+              방향1 선택
             </Button>
             <Button
               variant={selectedDirection === 2 ? "default" : "outline"}
               onClick={() => setSelectedDirection(2)}
-              className="flex-1"
             >
-              방향2
+              방향2 선택
+            </Button>
+            <Button
+              variant={showUnmatched ? "default" : "outline"}
+              onClick={handleToggleUnmatched}
+            >
+              <EyeOff className="size-4" />
+              미매칭 표시
             </Button>
           </div>
 
@@ -406,11 +418,12 @@ export function CoveragePage() {
               <MapSvg className="max-h-full max-w-full select-none" />
             </div>
 
-            <div className="absolute right-3 top-3 flex gap-2">
+            <div className="absolute right-2 bottom-2 flex flex-col items-end gap-1">
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setZoom((p) => Math.min(p + 10, 500))}
+                className="bg-background/80 backdrop-blur-[1px]"
               >
                 <ZoomIn className="size-4" />
               </Button>
@@ -418,6 +431,7 @@ export function CoveragePage() {
                 variant="outline"
                 size="icon"
                 onClick={() => setZoom((p) => Math.max(p - 10, 50))}
+                className="bg-background/80 backdrop-blur-[1px]"
               >
                 <ZoomOut className="size-4" />
               </Button>
@@ -428,22 +442,23 @@ export function CoveragePage() {
                   setZoom(100);
                   setPosition({ x: 0, y: 0 });
                 }}
+                className="bg-background/80 backdrop-blur-[1px]"
               >
                 <RotateCcw className="size-4" />
               </Button>
-              <div className="flex h-9 items-center justify-center rounded-md border bg-background px-2 text-center text-sm text-foreground tabular-nums">
+              <div className="flex h-9 items-center justify-center rounded-md border bg-background/80 backdrop-blur-[1px] px-2 text-center text-sm text-foreground tabular-nums">
                 {zoom}%
               </div>
             </div>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2 mt-6.5">
             {[
-              { label: "방향1", ids: direction1Selection, color: "#ad46ff" },
-              { label: "방향2", ids: direction2Selection, color: "#00d5be" },
+              { label: "방향1", ids: direction1Selection, color: "#FF8C00" },
+              { label: "방향2", ids: direction2Selection, color: "#262626" },
             ].map(({ label, ids, color }) => (
-              <div key={label} className="flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground tabular-nums">
+              <div key={label} className="flex items-center gap-1">
+                <span className="text-sm text-foreground font-medium tabular-nums">
                   {label}:
                 </span>
                 <div className="flex flex-wrap gap-1">
@@ -451,14 +466,16 @@ export function CoveragePage() {
                     ids.map((id) => (
                       <Badge
                         key={id}
-                        className="tabular-nums"
+                        size="sm"
                         style={{ backgroundColor: color }}
                       >
                         {id}
                       </Badge>
                     ))
                   ) : (
-                    <Badge variant="outline">미선택</Badge>
+                    <Badge variant="outline" size="sm">
+                      미선택
+                    </Badge>
                   )}
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Trash2, Save, X } from "lucide-react";
+import { Download, Trash2, Save } from "lucide-react";
 import cctvImage from "@/assets/cctv.jpg";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -164,26 +164,23 @@ export function RoiEditorPage() {
           </div>
 
           {/* ROI 목록 */}
-          <div className="flex min-h-0 flex-1 flex-col gap-3">
-            <h3 className="shrink-0 text-base text-foreground font-bold">
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
+            <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
               ROI 목록 ({roiList.length})
             </h3>
-            <div className="flex flex-col gap-1 overflow-y-auto">
+            <div className="flex flex-col gap-2 overflow-y-auto">
               {roiList.map((roi) => (
-                <div
-                  key={roi}
-                  className="flex items-center justify-between rounded-lg border bg-muted-foreground px-3 py-2"
-                >
-                  <span className="text-sm text-secondary font-bold tabular-nums">
+                <div key={roi} className="flex items-center justify-between">
+                  <span className="text-sm text-primary font-bold tabular-nums">
                     {roi}
                   </span>
                   <Button
                     variant="ghost"
                     size="icon-xs"
                     onClick={() => handleDeleteRoi(roi)}
-                    className="text-background hover:text-destructive hover:bg-transparent"
+                    className="text-secondary-foreground hover:bg-transparent"
                   >
-                    <X className="size-4" />
+                    <Trash2 className="size-4" />
                   </Button>
                 </div>
               ))}
@@ -192,9 +189,9 @@ export function RoiEditorPage() {
         </div>
 
         {/* 우측 CCTV 이미지 영역 */}
-        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
-          <div className="flex items-center">
-            <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
+          <div className="flex flex-col gap-1 px-4 pt-5">
+            <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
               {currentCctvLabel}
               <Separator orientation="vertical" className="h-3" />
               방향{selectedDirection} (
@@ -203,7 +200,7 @@ export function RoiEditorPage() {
           </div>
 
           {/* 이미지 컨테이너 */}
-          <div className="relative flex-1 overflow-hidden rounded-lg border">
+          <div className="relative flex-1 overflow-hidden">
             {/* CCTV 이미지 */}
             <img
               src={cctvImage}
@@ -212,10 +209,10 @@ export function RoiEditorPage() {
             />
 
             {/* 방향 라벨들 */}
-            <span className="absolute top-3 left-3 flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm text-foreground">
+            <span className="absolute top-2 left-2 flex items-center justify-center rounded-sm bg-primary/80 px-2 py-1 text-center text-xs text-secondary tabular-nums">
               방향1 (상단)
             </span>
-            <span className="absolute top-[calc(50%+12px)] left-3 flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm text-foreground">
+            <span className="absolute top-[calc(50%+8px)] left-2 flex items-center justify-center rounded-sm bg-primary/80 px-2 py-1 text-center text-xs text-secondary tabular-nums">
               방향2 (하단)
             </span>
           </div>

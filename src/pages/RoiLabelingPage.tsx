@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { format } from "date-fns";
 import {
   Save,
   RefreshCw,
@@ -59,6 +60,8 @@ const dummyPoints = [
   { label: "P3", x: 677, y: 220 },
   { label: "P4", x: 776, y: 302 },
 ];
+
+const now = new Date();
 
 export function RoiLabelingPage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");
@@ -134,34 +137,36 @@ export function RoiLabelingPage() {
               onClick={() => setSelectedDirection(1)}
               className="flex-1"
             >
-              방향1 (상단)
+              방향1 선택
             </Button>
             <Button
               variant={selectedDirection === 2 ? "default" : "outline"}
               onClick={() => setSelectedDirection(2)}
               className="flex-1"
             >
-              방향2 (하단)
+              방향2 선택
             </Button>
           </div>
 
           {/* 주차칸 목록 */}
-          <div className="space-y-3">
-            <h3 className="text-base text-foreground font-bold">주차칸 목록</h3>
+          <div className="space-y-2">
+            <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
+              주차칸 목록
+            </h3>
             <div className="flex flex-col gap-1">
               {parkingSlots.map((slot) => (
                 <Button
                   key={slot}
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => setSelectedSlot(slot)}
-                  className={`h-auto w-full justify-between px-3 py-2 ${selectedSlot === slot ? "bg-primary hover:bg-primary/90" : "bg-muted-foreground hover:bg-muted-foreground/90"}`}
+                  className={`w-full h-auto justify-between p-0 hover:bg-transparent ${selectedSlot === slot ? "text-primary" : "text-secondary-foreground"}`}
                 >
-                  <span className="text-sm text-secondary font-bold tabular-nums">
-                    {slot}
-                  </span>
-                  <Badge variant="outline" className="bg-background">
-                    미완료
-                  </Badge>
+                  <span className="font-bold tabular-nums">{slot}</span>
+                  {selectedSlot === slot ? (
+                    <Badge variant="secondary">완료</Badge>
+                  ) : (
+                    <Badge variant="outline">미완료</Badge>
+                  )}
                 </Button>
               ))}
             </div>
@@ -169,16 +174,18 @@ export function RoiLabelingPage() {
         </div>
 
         {/* 우측 CCTV 이미지 영역 */}
-        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
+          <div className="flex items-center justify-between px-4 pt-5">
+            <div className="flex flex-col gap-1">
+              <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
                 {currentCctvLabel}
                 <Separator orientation="vertical" className="h-3" />
                 방향{selectedDirection} (
                 {selectedDirection === 1 ? "상단" : "하단"})
               </h3>
-              <span className="text-sm text-muted-foreground">00:00:00</span>
+              <span className="text-sm text-muted-foreground tabular-nums leading-tight">
+                {format(now, "HH:mm:ss")}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Progress value={25} className="w-32" />
@@ -189,7 +196,7 @@ export function RoiLabelingPage() {
           </div>
 
           {/* 이미지 컨테이너 */}
-          <div className="relative flex-1 overflow-hidden rounded-lg border">
+          <div className="relative flex-1 overflow-hidden">
             {/* CCTV 이미지 */}
             <img
               src={cctvImage}
@@ -198,17 +205,37 @@ export function RoiLabelingPage() {
             />
 
             {/* 우측 상단 컨트롤 버튼 */}
-            <div className="absolute right-3 top-3 flex gap-2">
-              <Button variant="outline" size="icon" title="새 ROI 그리기">
+            <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                title="새 ROI 그리기"
+                className="bg-background/80 backdrop-blur-[1px]"
+              >
                 <Pencil className="size-4" />
               </Button>
-              <Button variant="outline" size="icon" title="그리기 취소">
+              <Button
+                variant="outline"
+                size="icon"
+                title="그리기 취소"
+                className="bg-background/80 backdrop-blur-[1px]"
+              >
                 <PencilOff className="size-4" />
               </Button>
-              <Button variant="outline" size="icon" title="점 취소">
+              <Button
+                variant="outline"
+                size="icon"
+                title="점 취소"
+                className="bg-background/80 backdrop-blur-[1px]"
+              >
                 <Undo2 className="size-4" />
               </Button>
-              <Button variant="outline" size="icon" title="ROI 삭제">
+              <Button
+                variant="outline"
+                size="icon"
+                title="ROI 삭제"
+                className="bg-background/80 backdrop-blur-[1px]"
+              >
                 <Trash2 className="size-4" />
               </Button>
               <Popover>
@@ -232,7 +259,7 @@ export function RoiLabelingPage() {
             </div>
 
             {/* 좌측 하단 범례 */}
-            <div className="absolute bottom-3 right-3 flex flex-col gap-1 rounded-lg border bg-background px-3 py-2">
+            <div className="absolute bottom-5 left-4 flex flex-col gap-1 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                 <Crosshair className="size-3" />
                 <span>현재 ROI 좌표</span>
