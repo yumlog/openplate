@@ -71,7 +71,6 @@ const ZOOM_STEP = 10;
 export function MapPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState<number[]>([720]);
-  const [isDragging, setIsDragging] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isMapDragging, setIsMapDragging] = useState(false);
@@ -341,34 +340,16 @@ export function MapPage() {
           {/* 슬라이더 */}
           <div className="flex items-center gap-3 px-4">
             <span className="text-xs text-muted-foreground">00:00</span>
-            <div className="relative">
-              <Slider
-                value={time}
-                onValueChange={(value) => {
-                  setTime(value);
-                  setIsDragging(true);
-                }}
-                onValueCommit={() => setIsDragging(false)}
-                min={0}
-                max={1440}
-                step={30}
-                className="w-48"
-              />
-              {isDragging && (
-                <div
-                  className="absolute z-1 top-4.5 flex flex-col items-center"
-                  style={{
-                    left: `calc(${(time[0] / 1440) * 100}% + ${8 - (time[0] / 1440) * 16}px)`,
-                    transform: "translateX(-50%)",
-                  }}
-                >
-                  <div className="size-2.5 rotate-45 bg-primary" />
-                  <div className="-mt-1.25 rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
-                    {formatTime(time[0])}
-                  </div>
-                </div>
-              )}
-            </div>
+            <Slider
+              value={time}
+              onValueChange={setTime}
+              min={0}
+              max={1440}
+              step={30}
+              className="w-48"
+              showTooltip
+              formatTooltip={formatTime}
+            />
             <span className="text-xs text-muted-foreground">24:00</span>
           </div>
 

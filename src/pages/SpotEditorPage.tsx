@@ -70,7 +70,6 @@ export function SpotEditorPage() {
   const [selectedDirection, setSelectedDirection] = useState<1 | 2>(1);
   const [selectedSlot, setSelectedSlot] = useState("P230");
   const [radius, setRadius] = useState([25]);
-  const [isDragging, setIsDragging] = useState(false);
   const [isInfoPopoverOpen, setIsInfoPopoverOpen] = useState(false);
 
   const currentCctvLabel =
@@ -233,34 +232,15 @@ export function SpotEditorPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground">SPOT 반경</span>
-                <div className="relative">
-                  <Slider
-                    value={radius}
-                    onValueChange={(value) => {
-                      setRadius(value);
-                      setIsDragging(true);
-                    }}
-                    onValueCommit={() => setIsDragging(false)}
-                    min={0}
-                    max={50}
-                    step={1}
-                    className="w-48"
-                  />
-                  {isDragging && (
-                    <div
-                      className="absolute z-1 top-4.5 flex flex-col items-center"
-                      style={{
-                        left: `calc(${(radius[0] / 50) * 100}% + ${8 - (radius[0] / 50) * 16}px)`,
-                        transform: "translateX(-50%)",
-                      }}
-                    >
-                      <div className="size-2.5 rotate-45 bg-primary" />
-                      <div className="-mt-1.25 rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
-                        {radius[0]}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <Slider
+                  value={radius}
+                  onValueChange={setRadius}
+                  min={0}
+                  max={50}
+                  step={1}
+                  className="w-48"
+                  showTooltip
+                />
               </div>
             </div>
           </div>
