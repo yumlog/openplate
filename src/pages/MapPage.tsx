@@ -192,7 +192,7 @@ export function MapPage() {
         el.removeEventListener("click", handleCctvClick);
       });
     };
-  }, []);
+  }, [floor]);
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + ZOOM_STEP, ZOOM_MAX));
