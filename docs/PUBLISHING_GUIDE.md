@@ -15,7 +15,7 @@ Tailwind의 neutral 컬러 대신 **시맨틱 컬러**를 사용합니다.
 | 배경색 (흰색) | `bg-background` | `#ffffff` (white) |
 | 호버/컨테이너 배경 | `bg-accent` | `#f5f5f5` (neutral-100) |
 | 테두리 | `border` (기본) | `#e5e5e5` (neutral-200) |
-| Primary (버튼/텍스트) | `text-primary`, `bg-primary` | `#171717` |
+| Primary (버튼/텍스트) | `text-primary`, `bg-primary` | `#262626` |
 | Primary Foreground | `text-primary-foreground` | `#fafafa` |
 | Secondary 강조색 | `text-secondary`, `bg-secondary` | `#a4ff04` |
 | Secondary Foreground | `text-secondary-foreground` | `#a3a3a3` |
@@ -41,7 +41,7 @@ border-neutral-200  →  border (기본값)
   --muted-foreground: 0 0% 45.1%; /* #737373 */
   --accent: 0 0% 96.1%;           /* #f5f5f5 */
   --border: 0 0% 89.8%;           /* #e5e5e5 */
-  --primary: 0 0% 9%;             /* #171717 */
+  --primary: 0 0% 15%;            /* #262626 */
   --primary-foreground: 0 0% 98%; /* #fafafa */
   --secondary: 82 100% 51%;       /* #a4ff04 */
   --secondary-foreground: 0 0% 64%; /* #a3a3a3 */
@@ -191,6 +191,7 @@ src/
 │       ├── input.tsx
 │       ├── label.tsx
 │       ├── popover.tsx
+│       ├── checkbox.tsx
 │       ├── select.tsx
 │       ├── separator.tsx
 │       ├── slider.tsx
@@ -201,6 +202,8 @@ src/
 │   ├── TimelinePage.tsx
 │   ├── CoveragePage.tsx
 │   ├── RoiLabelingPage.tsx
+│   ├── RoiEditorPage.tsx
+│   ├── SpotEditorPage.tsx
 │   ├── ReferenceBuilderPage.tsx
 │   └── index.ts
 ├── lib/

@@ -27,6 +27,7 @@ src/
 │       ├── input.tsx        # Input 컴포넌트
 │       ├── label.tsx        # Label 컴포넌트
 │       ├── popover.tsx      # Popover 컴포넌트
+│       ├── checkbox.tsx     # Checkbox 컴포넌트
 │       ├── select.tsx       # Select 컴포넌트
 │       ├── separator.tsx    # Separator 컴포넌트
 │       ├── slider.tsx       # Slider 컴포넌트
@@ -39,6 +40,8 @@ src/
 │   ├── MapPage.tsx          # 지도 페이지
 │   ├── CoveragePage.tsx     # 커버리지 페이지
 │   ├── RoiLabelingPage.tsx  # ROI 라벨링 페이지
+│   ├── RoiEditorPage.tsx    # ROI 에디터 페이지
+│   ├── SpotEditorPage.tsx   # SPOT 에디터 페이지
 │   ├── ReferenceBuilderPage.tsx # Reference 빌더 페이지
 │   └── index.ts
 ├── App.tsx                  # 앱 엔트리 (라우팅)
@@ -93,7 +96,7 @@ yarn preview
 
 ### 테마 컬러
 
-- **Primary**: `#171717` (다크 그레이)
+- **Primary**: `#262626` (다크 그레이)
 - **Primary Foreground**: `#fafafa` (화이트)
 - **Secondary**: `#a4ff04` (연두색)
 - **Grayscale**: Neutral 컬러 시스템
