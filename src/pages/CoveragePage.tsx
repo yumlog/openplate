@@ -309,14 +309,14 @@ export function CoveragePage() {
 
         <Button
           variant="outline"
-          size="icon"
+          size="icon-lg"
           onClick={() => handleCctvChange(-1)}
         >
           <ChevronLeft className="size-4" />
         </Button>
         <Button
           variant="outline"
-          size="icon"
+          size="icon-lg"
           onClick={() => handleCctvChange(1)}
         >
           <ChevronRight className="size-4" />
@@ -341,7 +341,9 @@ export function CoveragePage() {
       <div className="flex flex-1 gap-3 overflow-hidden">
         {/* 좌측: CCTV 이미지 */}
         <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background px-4 py-5">
-          <h3 className="text-base font-bold text-foreground leading-tight">
+          <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
+            {floorOptions.find((f) => f.value === selectedFloor)?.label}
+            <Separator orientation="vertical" className="h-3" />
             {currentCctvLabel}
           </h3>
 
@@ -421,7 +423,7 @@ export function CoveragePage() {
             <div className="absolute right-2 bottom-2 flex flex-col items-end gap-1">
               <Button
                 variant="outline"
-                size="icon"
+                size="icon-lg"
                 onClick={() => setZoom((p) => Math.min(p + 10, 500))}
                 className="bg-background/80 backdrop-blur-[1px]"
               >
@@ -429,7 +431,7 @@ export function CoveragePage() {
               </Button>
               <Button
                 variant="outline"
-                size="icon"
+                size="icon-lg"
                 onClick={() => setZoom((p) => Math.max(p - 10, 50))}
                 className="bg-background/80 backdrop-blur-[1px]"
               >
@@ -437,7 +439,7 @@ export function CoveragePage() {
               </Button>
               <Button
                 variant="outline"
-                size="icon"
+                size="icon-lg"
                 onClick={() => {
                   setZoom(100);
                   setPosition({ x: 0, y: 0 });

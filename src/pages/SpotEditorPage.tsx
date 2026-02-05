@@ -6,9 +6,13 @@ import {
   Info,
   CircleDot,
   RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Search,
 } from "lucide-react";
 import cctvImage from "@/assets/cctv.jpg";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -66,11 +70,14 @@ const slotList = [
 export function SpotEditorPage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");
   const [selectedCctv, setSelectedCctv] = useState("1");
-  const [isInpainted, setIsInpainted] = useState(true);
+  const [isLive, setIsLive] = useState(true);
   const [selectedDirection, setSelectedDirection] = useState<1 | 2>(1);
-  const [selectedSlot, setSelectedSlot] = useState("P230");
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [radius, setRadius] = useState([25]);
   const [isInfoPopoverOpen, setIsInfoPopoverOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [currentImage, setCurrentImage] = useState(1);
+  const totalImages = 15;
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
@@ -160,19 +167,95 @@ export function SpotEditorPage() {
           {/* 이미지 타입 버튼 */}
           <div className="flex gap-2">
             <Button
-              variant={isInpainted ? "default" : "outline"}
-              onClick={() => setIsInpainted(true)}
+              variant={!isLive ? "default" : "outline"}
+              onClick={() => setIsLive(false)}
               className="flex-1"
             >
               Inpainted
             </Button>
             <Button
-              variant={!isInpainted ? "default" : "outline"}
-              onClick={() => setIsInpainted(false)}
+              variant={isLive ? "default" : "outline"}
+              onClick={() => setIsLive(true)}
               className="flex-1"
             >
               Live
             </Button>
+          </div>
+
+          {isLive && (
+            <div className="flex flex-col">
+              <span className="text-sm text-foreground mb-2">날짜</span>
+              <DatePicker
+                date={date}
+                onDateChange={setDate}
+                className="w-full justify-center"
+              />
+              <p className="text-base text-foreground font-bold text-center tabular-nums mt-5">
+                00:00:00
+              </p>
+              <p className="text-xs text-muted-foreground text-center tabular-nums my-3">
+                이미지: {currentImage}/{totalImages}
+              </p>
+              <Slider
+                value={[currentImage]}
+                onValueChange={(value) => setCurrentImage(value[0])}
+                min={1}
+                max={totalImages}
+                step={1}
+              />
+              <div className="flex justify-between items-center gap-2 mt-5">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-md"
+                  onClick={() =>
+                    setCurrentImage((prev) => Math.max(1, prev - 1))
+                  }
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="xs"
+                    className="bg-accent text-muted-foreground rounded-md"
+                    onClick={() =>
+                      setCurrentImage((prev) => Math.max(1, prev - 10))
+                    }
+                  >
+                    -10
+                  </Button>
+                  <Button
+                    size="xs"
+                    className="bg-accent text-muted-foreground rounded-md"
+                    onClick={() =>
+                      setCurrentImage((prev) =>
+                        Math.min(totalImages, prev + 10),
+                      )
+                    }
+                  >
+                    +10
+                  </Button>
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-md"
+                  onClick={() =>
+                    setCurrentImage((prev) => Math.min(totalImages, prev + 1))
+                  }
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-secondary/6 p-3 rounded-lg text-foreground">
+            <h4 className="text-sm font-bold">SPOT 기반 점유 감지</h4>
+            <p className="text-xs mt-2">
+              각 슬롯에 N개의 원형 영역(SPOT)을 지정하고, Reference 이미지와
+              비교하여 점유 여부 판단
+            </p>
           </div>
 
           {/* 슬롯 목록 */}
@@ -182,14 +265,23 @@ export function SpotEditorPage() {
             </h3>
             <div className="flex flex-col gap-2 overflow-y-auto">
               {slotList.map((slot) => (
-                <div key={slot} className="flex items-center justify-between">
-                  <span className="text-sm text-primary font-bold tabular-nums">
+                <div
+                  key={slot}
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setSelectedSlot(slot)}
+                >
+                  <span
+                    className={`text-sm font-bold tabular-nums ${selectedSlot === slot ? "text-primary" : "text-secondary-foreground"}`}
+                  >
                     {slot}
                   </span>
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    onClick={() => handleDeleteSlot(slot)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteSlot(slot);
+                    }}
                     className="text-secondary-foreground hover:bg-transparent"
                   >
                     <Trash2 className="size-4" />
@@ -202,48 +294,63 @@ export function SpotEditorPage() {
 
         {/* 우측 CCTV 이미지 영역 */}
         <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
-          <div className="flex flex-col gap-3 px-4 pt-5">
-            <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
-              {currentCctvLabel}
-              <Separator orientation="vertical" className="h-3" />
-              방향1 (상단)
-              <Separator orientation="vertical" className="h-3" />
-              P230
-            </h3>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={selectedDirection === 1 ? "default" : "outline"}
-                  onClick={() => setSelectedDirection(1)}
-                >
-                  방향1 선택
-                </Button>
-                <Button
-                  variant={selectedDirection === 2 ? "default" : "outline"}
-                  onClick={() => setSelectedDirection(2)}
-                >
-                  방향2 선택
-                </Button>
-                <Input
-                  value={selectedSlot}
-                  onChange={(e) => setSelectedSlot(e.target.value)}
-                  className="w-24"
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">SPOT 반경</span>
-                <Slider
-                  value={radius}
-                  onValueChange={setRadius}
-                  min={0}
-                  max={50}
-                  step={1}
-                  className="w-48"
-                  showTooltip
-                />
+          <TooltipProvider delayDuration={0}>
+            <div className="flex flex-col gap-3 px-4 pt-5">
+              <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
+                {currentCctvLabel}
+                <Separator orientation="vertical" className="h-3" />
+                방향1 (상단)
+                <Separator orientation="vertical" className="h-3" />
+                P230
+              </h3>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={selectedDirection === 1 ? "default" : "outline"}
+                    onClick={() => setSelectedDirection(1)}
+                  >
+                    방향1 선택
+                  </Button>
+                  <Button
+                    variant={selectedDirection === 2 ? "default" : "outline"}
+                    onClick={() => setSelectedDirection(2)}
+                  >
+                    방향2 선택
+                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>
+                        <Input
+                          placeholder="슬롯 ID (예: P001)"
+                          value={selectedSlot ?? ""}
+                          onChange={(e) => setSelectedSlot(e.target.value)}
+                          className="w-48"
+                          startIcon={<Search className="size-4" />}
+                        />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent position="top">
+                      슬롯 ID 입력 후 이미지 클릭으로 SPOT 추가
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    SPOT 반경
+                  </span>
+                  <Slider
+                    value={radius}
+                    onValueChange={setRadius}
+                    min={0}
+                    max={50}
+                    step={1}
+                    className="w-48"
+                    showTooltip
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          </TooltipProvider>
 
           {/* 이미지 컨테이너 */}
           <div className="relative flex-1 overflow-hidden">
@@ -261,7 +368,7 @@ export function SpotEditorPage() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="icon-lg"
                       onClick={handleAddSpot}
                       className="bg-background/80 backdrop-blur-[1px]"
                     >
@@ -276,14 +383,16 @@ export function SpotEditorPage() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="icon-lg"
                       onClick={handleResetFromRoi}
                       className="bg-background/80 backdrop-blur-[1px]"
                     >
                       <RotateCcw className="size-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent position="left">ROI에서 초기화</TooltipContent>
+                  <TooltipContent position="left">
+                    ROI에서 초기화
+                  </TooltipContent>
                 </Tooltip>
                 <Tooltip open={isInfoPopoverOpen ? false : undefined}>
                   <TooltipTrigger asChild>
@@ -295,7 +404,7 @@ export function SpotEditorPage() {
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            size="icon"
+                            size="icon-lg"
                             className="bg-background/80 backdrop-blur-[1px]"
                           >
                             <Info className="size-4" />

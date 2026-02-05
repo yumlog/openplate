@@ -83,6 +83,7 @@ export function ReferenceBuilderPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const totalPages = 15;
 
   // 더미 데이터
@@ -155,13 +156,13 @@ export function ReferenceBuilderPage() {
           <DatePicker date={date} onDateChange={setDate} />
         </div>
 
-        <Button variant="outline" size="icon" onClick={handlePrevPage}>
+        <Button variant="outline" size="icon-lg" onClick={handlePrevPage}>
           <ChevronLeft className="size-4" />
         </Button>
         <span className="text-sm text-foreground tabular-nums min-w-12 text-center">
           {currentPage}/{totalPages}
         </span>
-        <Button variant="outline" size="icon" onClick={handleNextPage}>
+        <Button variant="outline" size="icon-lg" onClick={handleNextPage}>
           <ChevronRight className="size-4" />
         </Button>
 
@@ -187,13 +188,13 @@ export function ReferenceBuilderPage() {
         <div className="flex w-64 shrink-0 flex-col gap-5 overflow-hidden rounded-xl border bg-background px-4 py-5">
           {/* 수집된 빈 슬롯 */}
           <div className="shrink-0">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <h3 className="text-base text-foreground font-bold leading-tight">
                 수집된 빈 슬롯
               </h3>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon-xs">
+                  <Button variant="ghost" size="icon">
                     <Info className="size-4 text-muted-foreground" />
                   </Button>
                 </PopoverTrigger>
@@ -230,10 +231,13 @@ export function ReferenceBuilderPage() {
               {collectedSlots.map((slot) => (
                 <div
                   key={slot.id}
-                  className="flex items-center justify-between"
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setSelectedSlot(slot.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-primary font-bold tabular-nums">
+                    <span
+                      className={`text-sm font-bold tabular-nums ${selectedSlot === slot.id ? "text-primary" : "text-secondary-foreground"}`}
+                    >
                       {slot.id}
                     </span>
                     <span className="text-sm text-muted-foreground tabular-nums">
@@ -243,7 +247,10 @@ export function ReferenceBuilderPage() {
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    onClick={() => handleDeleteSlot(slot.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteSlot(slot.id);
+                    }}
                     className="text-secondary-foreground hover:bg-transparent"
                   >
                     <Trash2 className="size-4" />
@@ -277,16 +284,16 @@ export function ReferenceBuilderPage() {
             {/* 좌측 하단: 조작 안내 */}
             <div className="absolute bottom-5 left-4 flex items-center gap-3 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2 text-sm text-foreground">
               <span className="flex items-center gap-1.5">
-                <Badge>←</Badge>
-                <Badge>→</Badge>이미지이동
+                <Badge size="sm">←</Badge>
+                <Badge size="sm">→</Badge>이미지이동
               </span>
               <span className="text-muted-foreground">|</span>
               <span className="flex items-center gap-1.5">
-                <Badge>클릭</Badge> 빈 슬롯 수집
+                <Badge size="sm">클릭</Badge> 빈 슬롯 수집
               </span>
               <span className="text-muted-foreground">|</span>
               <span className="flex items-center gap-1.5">
-                <Badge>Shift+클릭</Badge> 수집 취소
+                <Badge size="sm">Shift+클릭</Badge> 수집 취소
               </span>
             </div>
           </div>

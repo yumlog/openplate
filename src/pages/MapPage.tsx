@@ -288,6 +288,27 @@ export function MapPage() {
       {/* 검색 폼 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
+          {/* 일자 데이트피커 */}
+          <div className="flex items-center gap-2">
+            <Label>날짜</Label>
+            <DatePicker date={date} onDateChange={setDate} />
+          </div>
+
+          {/* 층 셀렉트 */}
+          <div className="flex items-center gap-2">
+            <Label>층</Label>
+            <Select defaultValue="b1">
+              <SelectTrigger>
+                <SelectValue placeholder="층 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="b3">B3</SelectItem>
+                <SelectItem value="b2">B2</SelectItem>
+                <SelectItem value="b1">B1</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* 입주민 조회 */}
           <div className="flex items-center gap-2">
             <Label>입주민 조회</Label>
@@ -310,27 +331,6 @@ export function MapPage() {
                 <SelectItem value="21">2층 1호</SelectItem>
                 <SelectItem value="31">3층 1호</SelectItem>
                 <SelectItem value="41">4층 1호</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* 일자 데이트피커 */}
-          <div className="flex items-center gap-2">
-            <Label>날짜</Label>
-            <DatePicker date={date} onDateChange={setDate} />
-          </div>
-
-          {/* 층 셀렉트 */}
-          <div className="flex items-center gap-2">
-            <Label>층</Label>
-            <Select defaultValue="b1">
-              <SelectTrigger>
-                <SelectValue placeholder="층 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="b3">B3</SelectItem>
-                <SelectItem value="b2">B2</SelectItem>
-                <SelectItem value="b1">B1</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -446,7 +446,7 @@ export function MapPage() {
           <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
             <Button
               variant="outline"
-              size="icon"
+              size="icon-lg"
               onClick={handleZoomIn}
               className="bg-background/80 backdrop-blur-[1px]"
             >
@@ -454,7 +454,7 @@ export function MapPage() {
             </Button>
             <Button
               variant="outline"
-              size="icon"
+              size="icon-lg"
               onClick={handleZoomOut}
               className="bg-background/80 backdrop-blur-[1px]"
             >
@@ -462,7 +462,7 @@ export function MapPage() {
             </Button>
             <Button
               variant="outline"
-              size="icon"
+              size="icon-lg"
               onClick={handleZoomReset}
               className="bg-background/80 backdrop-blur-[1px]"
             >

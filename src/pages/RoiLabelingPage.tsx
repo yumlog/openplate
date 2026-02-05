@@ -169,7 +169,7 @@ export function RoiLabelingPage() {
                   className={`w-full h-auto justify-between p-0 hover:bg-transparent ${selectedSlot === slot ? "text-primary" : "text-secondary-foreground"}`}
                 >
                   <span className="font-bold tabular-nums">{slot}</span>
-                  {selectedSlot === slot ? (
+                  {slot === "P230" ? (
                     <Badge variant="secondary">완료</Badge>
                   ) : (
                     <Badge variant="outline">미완료</Badge>
@@ -218,7 +218,7 @@ export function RoiLabelingPage() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="icon-lg"
                       className="bg-background/80 backdrop-blur-[1px]"
                     >
                       <Pencil className="size-4" />
@@ -230,7 +230,7 @@ export function RoiLabelingPage() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="icon-lg"
                       className="bg-background/80 backdrop-blur-[1px]"
                     >
                       <PencilOff className="size-4" />
@@ -242,7 +242,7 @@ export function RoiLabelingPage() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="icon-lg"
                       className="bg-background/80 backdrop-blur-[1px]"
                     >
                       <Undo2 className="size-4" />
@@ -254,7 +254,7 @@ export function RoiLabelingPage() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="icon-lg"
                       className="bg-background/80 backdrop-blur-[1px]"
                     >
                       <Trash2 className="size-4" />
@@ -272,7 +272,7 @@ export function RoiLabelingPage() {
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            size="icon"
+                            size="icon-lg"
                             className="bg-background/80 backdrop-blur-[1px]"
                           >
                             <Info className="size-4" />

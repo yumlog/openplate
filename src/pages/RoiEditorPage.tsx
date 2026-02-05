@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Download, Trash2, Save } from "lucide-react";
+import {
+  Download,
+  Trash2,
+  Save,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import cctvImage from "@/assets/cctv.jpg";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -48,7 +56,10 @@ export function RoiEditorPage() {
   const [selectedCctv, setSelectedCctv] = useState("1");
   const [isInpainted, setIsInpainted] = useState(true);
   const [selectedDirection] = useState(1);
-  const [selectedSlot] = useState("P230");
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [currentImage, setCurrentImage] = useState(1);
+  const totalImages = 15;
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
@@ -145,6 +156,96 @@ export function RoiEditorPage() {
             </Button>
           </div>
 
+          {isInpainted ? (
+            <div className="bg-secondary/6 p-3 rounded-lg text-foreground">
+              <h4 className="text-sm font-bold">Inpainted 모드</h4>
+              <p className="text-xs mt-2 mb-1">
+                차량 없는 참조 이미지로 ROI 그리기
+              </p>
+              <ul className="text-xs space-y-1">
+                <li>- CCTV 선택 → 주차칸 ID 입력</li>
+                <li>- 4점 클릭 → 서버에 저장</li>
+              </ul>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col">
+                <span className="text-sm text-foreground mb-2">날짜</span>
+                <DatePicker
+                  date={date}
+                  onDateChange={setDate}
+                  className="w-full justify-center"
+                />
+                <p className="text-base text-foreground font-bold text-center tabular-nums mt-5">
+                  00:00:00
+                </p>
+                <p className="text-xs text-muted-foreground text-center tabular-nums my-3">
+                  이미지: {currentImage}/{totalImages}
+                </p>
+                <Slider
+                  value={[currentImage]}
+                  onValueChange={(value) => setCurrentImage(value[0])}
+                  min={1}
+                  max={totalImages}
+                  step={1}
+                />
+                <div className="flex justify-between items-center gap-2 mt-5">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-md"
+                    onClick={() =>
+                      setCurrentImage((prev) => Math.max(1, prev - 1))
+                    }
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="xs"
+                      className="bg-accent text-muted-foreground rounded-md"
+                      onClick={() =>
+                        setCurrentImage((prev) => Math.max(1, prev - 10))
+                      }
+                    >
+                      -10
+                    </Button>
+                    <Button
+                      size="xs"
+                      className="bg-accent text-muted-foreground rounded-md"
+                      onClick={() =>
+                        setCurrentImage((prev) =>
+                          Math.min(totalImages, prev + 10),
+                        )
+                      }
+                    >
+                      +10
+                    </Button>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-md"
+                    onClick={() =>
+                      setCurrentImage((prev) => Math.min(totalImages, prev + 1))
+                    }
+                  >
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="bg-secondary/6 p-3 rounded-lg text-foreground">
+                <h4 className="text-sm font-bold">원본 CCTV 모드</h4>
+                <p className="text-xs mt-2 mb-1">실제 영상으로 ROI 검증/수정</p>
+                <ul className="text-xs space-y-1">
+                  <li>- 타임라인으로 시간대 탐색</li>
+                  <li>- ROI-주차상태 불일치 확인</li>
+                  <li>- ROI 클릭 → 점 드래그로 수정</li>
+                </ul>
+              </div>
+            </>
+          )}
+
           {/* ROI 목록 */}
           <div className="flex min-h-0 flex-1 flex-col gap-2">
             <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
@@ -152,14 +253,23 @@ export function RoiEditorPage() {
             </h3>
             <div className="flex flex-col gap-2 overflow-y-auto">
               {roiList.map((roi) => (
-                <div key={roi} className="flex items-center justify-between">
-                  <span className="text-sm text-primary font-bold tabular-nums">
+                <div
+                  key={roi}
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setSelectedSlot(roi)}
+                >
+                  <span
+                    className={`text-sm font-bold tabular-nums ${selectedSlot === roi ? "text-primary" : "text-secondary-foreground"}`}
+                  >
                     {roi}
                   </span>
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    onClick={() => handleDeleteRoi(roi)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteRoi(roi);
+                    }}
                     className="text-secondary-foreground hover:bg-transparent"
                   >
                     <Trash2 className="size-4" />
