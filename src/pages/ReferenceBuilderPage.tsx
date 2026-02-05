@@ -78,7 +78,7 @@ const collectedSlots = [
 
 export function ReferenceBuilderPage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");
-  const [selectedCctv, setSelectedCctv] = useState("1");
+  const [selectedCctv, setSelectedCctv] = useState("");
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [currentPage, setCurrentPage] = useState(1);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -156,22 +156,20 @@ export function ReferenceBuilderPage() {
           <DatePicker date={date} onDateChange={setDate} />
         </div>
 
-        <Button variant="outline" size="icon-lg" onClick={handlePrevPage}>
-          <ChevronLeft className="size-4" />
-        </Button>
-        <span className="text-sm text-foreground tabular-nums min-w-12 text-center">
-          {currentPage}/{totalPages}
-        </span>
-        <Button variant="outline" size="icon-lg" onClick={handleNextPage}>
-          <ChevronRight className="size-4" />
-        </Button>
-
-        <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
+        <Button
+          variant="outline"
+          onClick={() => setIsPreviewOpen(true)}
+          disabled={!selectedCctv}
+        >
           <Eye className="size-4" />
           프리뷰 보기
         </Button>
 
-        <Button variant="outline" onClick={() => setIsConfirmOpen(true)}>
+        <Button
+          variant="outline"
+          onClick={() => setIsConfirmOpen(true)}
+          disabled={!selectedCctv}
+        >
           <Image className="size-4" />
           Reference 이미지 생성
         </Button>
@@ -186,117 +184,163 @@ export function ReferenceBuilderPage() {
       <div className="flex flex-1 gap-3 overflow-hidden">
         {/* 좌측 조회 폼 */}
         <div className="flex w-64 shrink-0 flex-col gap-5 overflow-hidden rounded-xl border bg-background px-4 py-5">
-          {/* 수집된 빈 슬롯 */}
-          <div className="shrink-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-base text-foreground font-bold leading-tight">
-                수집된 빈 슬롯
-              </h3>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Info className="size-4 text-muted-foreground" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-64">
-                  <p className="text-sm text-muted-foreground">
-                    빈 주차 공간을 클릭하여 Reference 이미지를 구성하세요
-                  </p>
-                </PopoverContent>
-              </Popover>
-            </div>
+          {selectedCctv ? (
+            <>
+              {/* 수집된 빈 슬롯 */}
+              <div className="shrink-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base text-foreground font-bold leading-tight">
+                    수집된 빈 슬롯
+                  </h3>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Info className="size-4 text-muted-foreground" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="w-64">
+                      <p className="text-sm text-muted-foreground">
+                        빈 주차 공간을 클릭하여 Reference 이미지를 구성하세요
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-            <div className="grid grid-cols-2 gap-2 mt-5 mb-3">
-              <div className="h-15 flex flex-col justify-center items-center bg-primary rounded-lg px-4 py-2">
-                <span className="text-sm text-secondary font-medium">
-                  {collectedCount}
-                </span>
-                <span className="text-xs text-background">수집됨</span>
-              </div>
-              <div className="h-15 flex flex-col justify-center items-center border rounded-lg px-4 py-2">
-                <span className="text-sm font-medium">{totalRoi}</span>
-                <span className="text-xs text-muted-foreground">전체 ROI</span>
-              </div>
-            </div>
-
-            <Progress value={progressPercentage} />
-          </div>
-
-          {/* 주차칸 목록 */}
-          <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
-              주차칸 목록
-            </h3>
-            <div className="flex flex-col gap-2 overflow-y-auto">
-              {collectedSlots.map((slot) => (
-                <div
-                  key={slot.id}
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => setSelectedSlot(slot.id)}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-sm font-bold tabular-nums ${selectedSlot === slot.id ? "text-primary" : "text-secondary-foreground"}`}
-                    >
-                      {slot.id}
+                <div className="grid grid-cols-2 gap-2 mt-5 mb-3">
+                  <div className="h-15 flex flex-col justify-center items-center bg-primary rounded-lg px-4 py-2">
+                    <span className="text-sm text-secondary font-medium">
+                      {collectedCount}
                     </span>
-                    <span className="text-sm text-muted-foreground tabular-nums">
-                      {slot.time}
+                    <span className="text-xs text-background">수집됨</span>
+                  </div>
+                  <div className="h-15 flex flex-col justify-center items-center border rounded-lg px-4 py-2">
+                    <span className="text-sm font-medium">{totalRoi}</span>
+                    <span className="text-xs text-muted-foreground">
+                      전체 ROI
                     </span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteSlot(slot.id);
-                    }}
-                    className="text-secondary-foreground hover:bg-transparent"
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                <Progress value={progressPercentage} />
+              </div>
+
+              {/* 주차칸 목록 */}
+              <div className="flex min-h-0 flex-1 flex-col gap-2">
+                <h3 className="text-sm text-foreground leading-tight pb-2 border-b">
+                  주차칸 목록
+                </h3>
+                <div className="flex flex-col gap-2 overflow-y-auto">
+                  {collectedSlots.map((slot) => (
+                    <div
+                      key={slot.id}
+                      className="flex items-center justify-between cursor-pointer"
+                      onClick={() => setSelectedSlot(slot.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`text-sm font-bold tabular-nums ${selectedSlot === slot.id ? "text-primary" : "text-secondary-foreground"}`}
+                        >
+                          {slot.id}
+                        </span>
+                        <span className="text-sm text-muted-foreground tabular-nums">
+                          {slot.time}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteSlot(slot.id);
+                        }}
+                        className="text-secondary-foreground hover:bg-transparent"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="flex-1 flex items-center justify-center text-center text-sm text-muted-foreground">
+              CCTV를 선택하면
+              <br />
+              슬롯 목록이 표시됩니다.
+            </p>
+          )}
         </div>
 
         {/* 우측 CCTV 이미지 영역 */}
         <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
-          <div className="flex flex-col gap-1 px-4 pt-5">
-            <h3 className="text-base font-bold text-foreground leading-tight">
-              {currentCctvLabel}
-            </h3>
-            <span className="text-sm text-muted-foreground tabular-nums leading-tight">
-              {format(now, "HH:mm:ss")}
-            </span>
-          </div>
+          {selectedCctv ? (
+            <>
+              <div className="flex justify-between px-4 pt-5">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-base font-bold text-foreground leading-tight">
+                    {currentCctvLabel}
+                  </h3>
+                  <span className="text-sm text-muted-foreground tabular-nums leading-tight">
+                    {format(now, "HH:mm:ss")}
+                  </span>
+                </div>
 
-          {/* 이미지 컨테이너 */}
-          <div className="relative flex-1 overflow-hidden">
-            {/* CCTV 이미지 */}
-            <img
-              src={cctvImage}
-              alt="CCTV"
-              className="h-full w-full object-contain"
-            />
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="icon-lg"
+                    className="rounded-md"
+                    onClick={handlePrevPage}
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
+                  <span className="w-14 text-sm text-muted-foreground text-center tabular-nums">
+                    {currentPage}/{totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon-lg"
+                    className="rounded-md"
+                    onClick={handleNextPage}
+                  >
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
 
-            {/* 좌측 하단: 조작 안내 */}
-            <div className="absolute bottom-5 left-4 flex items-center gap-3 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2 text-sm text-foreground">
-              <span className="flex items-center gap-1.5">
-                <Badge size="sm">←</Badge>
-                <Badge size="sm">→</Badge>이미지이동
-              </span>
-              <span className="text-muted-foreground">|</span>
-              <span className="flex items-center gap-1.5">
-                <Badge size="sm">클릭</Badge> 빈 슬롯 수집
-              </span>
-              <span className="text-muted-foreground">|</span>
-              <span className="flex items-center gap-1.5">
-                <Badge size="sm">Shift+클릭</Badge> 수집 취소
-              </span>
+              {/* 이미지 컨테이너 */}
+              <div className="relative flex-1 overflow-hidden">
+                {/* CCTV 이미지 */}
+                <img
+                  src={cctvImage}
+                  alt="CCTV"
+                  className="h-full w-full object-contain"
+                />
+
+                {/* 좌측 하단: 조작 안내 */}
+                <div className="absolute bottom-5 left-4 flex items-center gap-3 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2 text-sm text-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Badge size="sm">←</Badge>
+                    <Badge size="sm">→</Badge>이미지이동
+                  </span>
+                  <span className="text-muted-foreground">|</span>
+                  <span className="flex items-center gap-1.5">
+                    <Badge size="sm">클릭</Badge> 빈 슬롯 수집
+                  </span>
+                  <span className="text-muted-foreground">|</span>
+                  <span className="flex items-center gap-1.5">
+                    <Badge size="sm">Shift+클릭</Badge> 수집 취소
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center">
+              <p className="text-sm text-muted-foreground">
+                CCTV를 선택하면 이미지가 표시됩니다.
+              </p>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

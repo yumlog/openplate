@@ -71,6 +71,9 @@ const ZOOM_STEP = 10;
 export function MapPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState<number[]>([720]);
+  const [floor, setFloor] = useState("");
+  const [residentDong, setResidentDong] = useState("");
+  const [residentHo, setResidentHo] = useState("");
   const [zoom, setZoom] = useState(100);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isMapDragging, setIsMapDragging] = useState(false);
@@ -248,7 +251,7 @@ export function MapPage() {
     return () => {
       container.removeEventListener("wheel", handleWheel);
     };
-  }, []);
+  }, [floor]);
 
   return (
     <div className="flex h-full flex-col gap-5">
@@ -297,7 +300,7 @@ export function MapPage() {
           {/* 층 셀렉트 */}
           <div className="flex items-center gap-2">
             <Label>층</Label>
-            <Select defaultValue="b1">
+            <Select value={floor} onValueChange={setFloor}>
               <SelectTrigger>
                 <SelectValue placeholder="층 선택" />
               </SelectTrigger>
@@ -312,9 +315,13 @@ export function MapPage() {
           {/* 입주민 조회 */}
           <div className="flex items-center gap-2">
             <Label>입주민 조회</Label>
-            <Select>
+            <Select
+              value={residentDong}
+              onValueChange={setResidentDong}
+              disabled={!floor}
+            >
               <SelectTrigger className="flex-1">
-                <SelectValue placeholder="동" />
+                <SelectValue placeholder="동 선택" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="1101">1101동</SelectItem>
@@ -322,9 +329,13 @@ export function MapPage() {
                 <SelectItem value="1103">1103동</SelectItem>
               </SelectContent>
             </Select>
-            <Select>
+            <Select
+              value={residentHo}
+              onValueChange={setResidentHo}
+              disabled={!floor}
+            >
               <SelectTrigger className="flex-1">
-                <SelectValue placeholder="층/호" />
+                <SelectValue placeholder="호수 선택" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="11">1층 1호</SelectItem>
@@ -338,25 +349,27 @@ export function MapPage() {
 
         <div className="flex items-center gap-2">
           {/* 슬라이더 */}
-          <div className="flex items-center gap-3 px-4">
-            <span className="text-xs text-muted-foreground">00:00</span>
-            <Slider
-              value={time}
-              onValueChange={setTime}
-              min={0}
-              max={1440}
-              step={30}
-              className="w-48"
-              showTooltip
-              formatTooltip={formatTime}
-            />
-            <span className="text-xs text-muted-foreground">24:00</span>
-          </div>
+          {floor && (
+            <div className="flex items-center gap-3 px-4">
+              <span className="text-xs text-muted-foreground">00:00</span>
+              <Slider
+                value={time}
+                onValueChange={setTime}
+                min={0}
+                max={1440}
+                step={30}
+                className="w-48"
+                showTooltip
+                formatTooltip={formatTime}
+              />
+              <span className="text-xs text-muted-foreground">24:00</span>
+            </div>
+          )}
 
           {/* 차량검색 인풋 */}
           <Input
-            placeholder="차량번호 입력"
-            className="w-48"
+            placeholder="번호판 입력 (예: 12가3456)"
+            className="w-52"
             startIcon={<Search className="size-4" />}
           />
 
@@ -369,128 +382,163 @@ export function MapPage() {
       <div className="flex flex-1 gap-3 overflow-hidden">
         {/* 좌측 조회 폼 */}
         <div className="flex w-64 shrink-0 flex-col gap-5 overflow-hidden rounded-xl border bg-background px-4 py-5">
-          {/* 조회 결과 */}
-          <div className="space-y-1">
-            <h3 className="text-base text-foreground font-bold leading-tight">
-              입주민 0006
-            </h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
-              <span>010-1234-5678</span>
-              <Separator orientation="vertical" className="h-2" />
-              <span>1101-0201</span>
-            </div>
-          </div>
-          <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <p className="text-sm text-foreground leading-tight">보유 차량</p>
-            <div className="flex flex-col gap-2 overflow-y-auto">
-              {sampleParkingData.map((spot) => (
-                <Button
-                  key={spot.parkingId}
-                  variant="outline"
-                  className="h-auto w-full shrink-0 flex-col items-start gap-0 px-4 py-3 bg-muted-foreground hover:bg-muted-foreground/90"
-                  onClick={() => moveToParkingSpot(spot.parkingId)}
-                >
-                  <p className="text-sm text-secondary font-bold">
-                    {spot.plateNumber}
-                  </p>
-                  <p className="text-sm text-background">{spot.location}</p>
-                  <p className="mt-2 text-xs text-background/80">
-                    {formatDateTime(spot.parkedAt)}
-                  </p>
-                </Button>
-              ))}
-            </div>
-          </div>
+          {residentDong && residentHo ? (
+            <>
+              {/* 조회 결과 */}
+              <div className="space-y-1">
+                <h3 className="text-base text-foreground font-bold leading-tight">
+                  입주민 0006
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground leading-tight">
+                  <span>010-1234-5678</span>
+                  <Separator orientation="vertical" className="h-2" />
+                  <span>1101-0201</span>
+                </div>
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col gap-2">
+                <p className="text-sm text-foreground leading-tight">
+                  보유 차량
+                </p>
+                <div className="flex flex-col gap-2 overflow-y-auto">
+                  {sampleParkingData.map((spot) => (
+                    <Button
+                      key={spot.parkingId}
+                      variant="outline"
+                      className="h-auto w-full shrink-0 flex-col items-start gap-0 px-4 py-3 bg-muted-foreground hover:bg-muted-foreground/90"
+                      onClick={() => moveToParkingSpot(spot.parkingId)}
+                    >
+                      <p className="text-sm text-secondary font-bold">
+                        {spot.plateNumber}
+                      </p>
+                      <p className="text-sm text-background">{spot.location}</p>
+                      <p className="mt-2 text-xs text-background/80">
+                        {formatDateTime(spot.parkedAt)}
+                      </p>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="flex-1 flex justify-center items-center text-center text-sm text-muted-foreground">
+              동과 호수를 선택하면
+              <br />
+              입주민 정보가 표시됩니다.
+            </p>
+          )}
         </div>
 
         {/* 우측 지도 영역 */}
-        <div
-          ref={mapContainerRef}
-          className="relative flex-1 overflow-hidden rounded-xl border bg-background"
-          onMouseDown={handleMapMouseDown}
-          onMouseMove={handleMapMouseMove}
-          onMouseUp={handleMapMouseEnd}
-          onMouseLeave={handleMapMouseEnd}
-          style={{ cursor: isMapDragging ? "grabbing" : "grab" }}
-        >
-          {/* 지도 SVG 영역 */}
-          <div
-            ref={svgContainerRef}
-            className="flex h-full w-full items-center justify-center"
-            style={{
-              transform: `translate(${position.x}px, ${position.y}px) scale(${zoom / 100})`,
-              transformOrigin: "center center",
-            }}
-          >
-            <MapSvg className="max-h-full max-w-full select-none" />
-          </div>
-
-          {/* 주차 위치 툴팁 */}
-          {hoveredSpot && (
-            <div
-              className="pointer-events-none fixed z-50 flex flex-col items-center"
-              style={{
-                left: tooltipPosition.x,
-                top: tooltipPosition.y - 6,
-                transform: "translate(-50%, -100%)",
-              }}
-            >
-              <div className="rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
-                {hoveredSpot.parkingId} (차량 있음)
+        <div className="flex flex-1 flex-col gap-5 rounded-xl border bg-background">
+          {floor ? (
+            <>
+              <div className="flex flex-col gap-1 px-4 pt-5">
+                <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
+                  {date ? format(date, "yyyy-MM-dd") : "-"}
+                  <Separator orientation="vertical" className="h-3" />
+                  {floor.toUpperCase()}
+                  <Separator orientation="vertical" className="h-3" />
+                  {formatTime(time[0])}
+                </h3>
               </div>
-              <div className="-mt-1.25 size-2.5 rotate-45 bg-primary" />
+              <div
+                ref={mapContainerRef}
+                className="relative flex-1 overflow-hidden"
+                onMouseDown={handleMapMouseDown}
+                onMouseMove={handleMapMouseMove}
+                onMouseUp={handleMapMouseEnd}
+                onMouseLeave={handleMapMouseEnd}
+                style={{ cursor: isMapDragging ? "grabbing" : "grab" }}
+              >
+                {/* 지도 SVG 영역 */}
+                <div
+                  ref={svgContainerRef}
+                  className="flex h-full w-full items-center justify-center"
+                  style={{
+                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoom / 100})`,
+                    transformOrigin: "center center",
+                  }}
+                >
+                  <MapSvg className="max-h-full max-w-full select-none" />
+                </div>
+
+                {/* 주차 위치 툴팁 */}
+                {hoveredSpot && (
+                  <div
+                    className="pointer-events-none fixed z-50 flex flex-col items-center"
+                    style={{
+                      left: tooltipPosition.x,
+                      top: tooltipPosition.y - 6,
+                      transform: "translate(-50%, -100%)",
+                    }}
+                  >
+                    <div className="rounded-sm bg-primary px-3 py-1.5 text-xs text-secondary font-bold">
+                      {hoveredSpot.parkingId} (차량 있음)
+                    </div>
+                    <div className="-mt-1.25 size-2.5 rotate-45 bg-primary" />
+                  </div>
+                )}
+
+                {/* 우측 상단 컨트롤 */}
+                <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
+                  <Button
+                    variant="outline"
+                    size="icon-lg"
+                    onClick={handleZoomIn}
+                    className="bg-background/80 backdrop-blur-[1px]"
+                  >
+                    <ZoomIn className="size-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon-lg"
+                    onClick={handleZoomOut}
+                    className="bg-background/80 backdrop-blur-[1px]"
+                  >
+                    <ZoomOut className="size-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon-lg"
+                    onClick={handleZoomReset}
+                    className="bg-background/80 backdrop-blur-[1px]"
+                  >
+                    <RotateCcw className="size-4" />
+                  </Button>
+                  <div className="flex h-9 items-center justify-center rounded-md border bg-background/80 backdrop-blur-[1px] px-2 text-center text-sm text-foreground tabular-nums">
+                    {zoom}%
+                  </div>
+                </div>
+
+                {/* 좌측 하단 범례 */}
+                <div className="absolute bottom-5 left-4 flex flex-col gap-1 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2">
+                  {[
+                    { color: "#55D400", label: "전기차" },
+                    { color: "#FF9F9F", label: "임산부" },
+                    { color: "#83BDFF", label: "장애인" },
+                    { color: "#00439F", label: "경차" },
+                    { color: "#666666", label: "일반" },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-1">
+                      <div
+                        className="size-2 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="text-xs text-foreground">
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center">
+              <p className="text-sm text-muted-foreground">
+                층 선택시 지도가 표시됩니다.
+              </p>
             </div>
           )}
-
-          {/* 우측 상단 컨트롤 */}
-          <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
-            <Button
-              variant="outline"
-              size="icon-lg"
-              onClick={handleZoomIn}
-              className="bg-background/80 backdrop-blur-[1px]"
-            >
-              <ZoomIn className="size-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-lg"
-              onClick={handleZoomOut}
-              className="bg-background/80 backdrop-blur-[1px]"
-            >
-              <ZoomOut className="size-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-lg"
-              onClick={handleZoomReset}
-              className="bg-background/80 backdrop-blur-[1px]"
-            >
-              <RotateCcw className="size-4" />
-            </Button>
-            <div className="flex h-9 items-center justify-center rounded-md border bg-background/80 backdrop-blur-[1px] px-2 text-center text-sm text-foreground tabular-nums">
-              {zoom}%
-            </div>
-          </div>
-
-          {/* 좌측 하단 범례 */}
-          <div className="absolute bottom-5 left-4 flex flex-col gap-1 rounded-lg border bg-background/80 backdrop-blur-[1px] px-3 py-2">
-            {[
-              { color: "#55D400", label: "전기차" },
-              { color: "#FF9F9F", label: "임산부" },
-              { color: "#83BDFF", label: "장애인" },
-              { color: "#00439F", label: "경차" },
-              { color: "#666666", label: "일반" },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-1">
-                <div
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: item.color }}
-                />
-                <span className="text-xs text-foreground">{item.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
