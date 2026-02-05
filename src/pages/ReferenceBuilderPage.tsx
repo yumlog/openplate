@@ -84,6 +84,7 @@ export function ReferenceBuilderPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const totalPages = 15;
 
   // 더미 데이터
@@ -106,6 +107,7 @@ export function ReferenceBuilderPage() {
 
   const handleDeleteSlot = (slotId: string) => {
     console.log("삭제:", slotId);
+    setDeleteTarget(null);
   };
 
   const handleGenerateReference = () => {
@@ -251,7 +253,7 @@ export function ReferenceBuilderPage() {
                         size="icon-xs"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteSlot(slot.id);
+                          setDeleteTarget(slot.id);
                         }}
                         className="text-secondary-foreground hover:bg-transparent"
                       >
@@ -372,6 +374,27 @@ export function ReferenceBuilderPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
             <AlertDialogAction onClick={handleGenerateReference}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>주차칸 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget}을 삭제하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleDeleteSlot(deleteTarget!)}>
               확인
             </AlertDialogAction>
           </AlertDialogFooter>

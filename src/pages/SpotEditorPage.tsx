@@ -44,6 +44,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -79,7 +89,7 @@ const slotList = [
 export function SpotEditorPage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");
   const [selectedCctv, setSelectedCctv] = useState("");
-  const [isLive, setIsLive] = useState(true);
+  const [isLive, setIsLive] = useState(false);
   const [selectedDirection, setSelectedDirection] = useState<1 | 2>(1);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [radius, setRadius] = useState([25]);
@@ -88,6 +98,7 @@ export function SpotEditorPage() {
   const [showDetectedCars, setShowDetectedCars] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [currentImage, setCurrentImage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const totalImages = 15;
   const detectedCars = 5;
 
@@ -108,6 +119,7 @@ export function SpotEditorPage() {
 
   const handleDeleteSlot = (slotId: string) => {
     console.log("슬롯 삭제:", slotId);
+    setDeleteTarget(null);
   };
 
   const handleAddSpot = () => {
@@ -300,7 +312,7 @@ export function SpotEditorPage() {
                         size="icon-xs"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteSlot(slot);
+                          setDeleteTarget(slot);
                         }}
                         className="text-secondary-foreground hover:bg-transparent"
                       >
@@ -559,6 +571,27 @@ export function SpotEditorPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>슬롯 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget}을 삭제하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleDeleteSlot(deleteTarget!)}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -29,6 +29,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
 // 주차 데이터 타입
 interface ParkingSpot {
@@ -84,6 +94,9 @@ export function MapPage() {
   const [cctvViewMode, setCctvViewMode] = useState<"original" | "roi">(
     "original",
   );
+  const [searchPlate, setSearchPlate] = useState("");
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const positionStartRef = useRef({ x: 0, y: 0 });
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -371,10 +384,25 @@ export function MapPage() {
             placeholder="번호판 입력 (예: 12가3456)"
             className="w-52"
             startIcon={<Search className="size-4" />}
+            value={searchPlate}
+            onChange={(e) => setSearchPlate(e.target.value)}
           />
 
           {/* 검색 버튼 */}
-          <Button>검색</Button>
+          <Button
+            onClick={() => {
+              if (searchPlate) {
+                setFloor("b2");
+                setResidentDong("1101");
+                setResidentHo("11");
+                setSearchModalOpen(true);
+              } else {
+                setAlertOpen(true);
+              }
+            }}
+          >
+            검색
+          </Button>
         </div>
       </div>
 
@@ -605,6 +633,40 @@ export function MapPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* 차량 검색 모달 */}
+      <Dialog open={searchModalOpen} onOpenChange={setSearchModalOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>차량 검색: {searchPlate}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-foreground font-medium">P001</p>
+            <Badge variant="secondary">방문차량</Badge>
+            <p className="text-sm text-muted-foreground">
+              마지막확인: {format(now, "yyyy-MM-dd HH:mm")}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {floor ? floor.toUpperCase() : "-"} (신뢰도: 0%)
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 차량 번호 미입력 알림 */}
+      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>번호판 입력</AlertDialogTitle>
+            <AlertDialogDescription>
+              차량 번호를 입력 후 검색 해주세요
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -35,6 +35,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -75,6 +84,7 @@ export function RoiLabelingPage() {
   const [selectedDirection, setSelectedDirection] = useState<1 | 2>(1);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [isInfoPopoverOpen, setIsInfoPopoverOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "";
@@ -122,7 +132,14 @@ export function RoiLabelingPage() {
           전체 불러오기
         </Button>
 
-        <Button variant="outline">
+        <Button
+          variant="outline"
+          onClick={() => {
+            if (!selectedCctv) {
+              setAlertOpen(true);
+            }
+          }}
+        >
           <RefreshCw className="size-4" />
           현재 CCTV ROI 새로고침
         </Button>
@@ -236,7 +253,9 @@ export function RoiLabelingPage() {
                           <Pencil className="size-4" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent position="left">새 ROI 그리기</TooltipContent>
+                      <TooltipContent position="left">
+                        새 ROI 그리기
+                      </TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -248,7 +267,9 @@ export function RoiLabelingPage() {
                           <PencilOff className="size-4" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent position="left">그리기 취소</TooltipContent>
+                      <TooltipContent position="left">
+                        그리기 취소
+                      </TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -292,11 +313,15 @@ export function RoiLabelingPage() {
                             </PopoverTrigger>
                             <PopoverContent align="end" className="w-64">
                               <div className="space-y-2">
-                                <h4 className="font-semibold text-sm">사용법:</h4>
+                                <h4 className="font-semibold text-sm">
+                                  사용법:
+                                </h4>
                                 <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
                                   <li>주차칸을 선택합니다</li>
                                   <li>이미지에서 4개의 꼭짓점을 클릭합니다</li>
-                                  <li>좌상단 → 우상단 → 우하단 → 좌하단 순서</li>
+                                  <li>
+                                    좌상단 → 우상단 → 우하단 → 좌하단 순서
+                                  </li>
                                   <li>4점이 완성되면 자동 저장됩니다</li>
                                 </ol>
                               </div>
@@ -340,6 +365,21 @@ export function RoiLabelingPage() {
           )}
         </div>
       </div>
+
+      {/* CCTV 미선택 알림 */}
+      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>현재 CCTV ROI 새로고침</AlertDialogTitle>
+            <AlertDialogDescription>
+              CCTV를 먼저 선택 후 새로고침 해주세요
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -19,6 +19,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const floorOptions = [
   { value: "b3", label: "B3" },
@@ -58,6 +68,7 @@ export function RoiEditorPage() {
   const [selectedDirection] = useState(1);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState(1);
   const totalImages = 15;
 
@@ -78,6 +89,7 @@ export function RoiEditorPage() {
 
   const handleDeleteRoi = (roiId: string) => {
     console.log("ROI 삭제:", roiId);
+    setDeleteTarget(null);
   };
 
   return (
@@ -274,7 +286,7 @@ export function RoiEditorPage() {
                         size="icon-xs"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteRoi(roi);
+                          setDeleteTarget(roi);
                         }}
                         className="text-secondary-foreground hover:bg-transparent"
                       >
@@ -332,6 +344,27 @@ export function RoiEditorPage() {
           )}
         </div>
       </div>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>ROI 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget}을 삭제하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleDeleteRoi(deleteTarget!)}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
