@@ -69,26 +69,14 @@ export function RoiEditorPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [saveAlertOpen, setSaveAlertOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(1);
   const totalImages = 15;
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
 
-  const handleJsonDownload = () => {
-    console.log("JSON 다운로드");
-  };
-
-  const handleDeleteAll = () => {
-    console.log("전체 삭제");
-  };
-
-  const handleSaveToServer = () => {
-    console.log("서버에 저장");
-  };
-
-  const handleDeleteRoi = (roiId: string) => {
-    console.log("ROI 삭제:", roiId);
+  const handleDeleteRoi = () => {
     setDeleteTarget(null);
   };
 
@@ -130,17 +118,17 @@ export function RoiEditorPage() {
           </Select>
         </div>
 
-        <Button variant="outline" onClick={handleJsonDownload}>
+        <Button variant="outline">
           <Download className="size-4" />
           JSON 다운로드
         </Button>
 
-        <Button variant="outline" onClick={handleDeleteAll}>
+        <Button variant="outline">
           <Trash2 className="size-4" />
           전체 삭제
         </Button>
 
-        <Button onClick={handleSaveToServer}>
+        <Button onClick={() => setSaveAlertOpen(true)}>
           <Save className="size-4" />
           서버에 저장
         </Button>
@@ -359,9 +347,23 @@ export function RoiEditorPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDeleteRoi(deleteTarget!)}>
+            <AlertDialogAction onClick={handleDeleteRoi}>
               확인
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 저장 확인 다이얼로그 */}
+      <AlertDialog open={saveAlertOpen} onOpenChange={setSaveAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>저장</AlertDialogTitle>
+            <AlertDialogDescription>저장하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction>확인</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

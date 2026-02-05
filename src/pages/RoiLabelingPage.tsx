@@ -38,6 +38,7 @@ import {
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
@@ -85,6 +86,7 @@ export function RoiLabelingPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [isInfoPopoverOpen, setIsInfoPopoverOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [saveAlertOpen, setSaveAlertOpen] = useState(false);
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "";
@@ -144,7 +146,7 @@ export function RoiLabelingPage() {
           현재 CCTV ROI 새로고침
         </Button>
 
-        <Button>
+        <Button onClick={() => setSaveAlertOpen(true)}>
           <Save className="size-4" />
           저장
         </Button>
@@ -376,6 +378,20 @@ export function RoiLabelingPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
+            <AlertDialogAction>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 저장 확인 다이얼로그 */}
+      <AlertDialog open={saveAlertOpen} onOpenChange={setSaveAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>저장</AlertDialogTitle>
+            <AlertDialogDescription>저장하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
             <AlertDialogAction>확인</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

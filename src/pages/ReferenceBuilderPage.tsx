@@ -85,6 +85,7 @@ export function ReferenceBuilderPage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [saveAlertOpen, setSaveAlertOpen] = useState(false);
   const totalPages = 15;
 
   // 더미 데이터
@@ -105,13 +106,11 @@ export function ReferenceBuilderPage() {
     setCurrentPage((prev) => Math.min(totalPages, prev + 1));
   };
 
-  const handleDeleteSlot = (slotId: string) => {
-    console.log("삭제:", slotId);
+  const handleDeleteSlot = () => {
     setDeleteTarget(null);
   };
 
   const handleGenerateReference = () => {
-    console.log("Reference 이미지 생성");
     setIsConfirmOpen(false);
   };
 
@@ -176,7 +175,7 @@ export function ReferenceBuilderPage() {
           Reference 이미지 생성
         </Button>
 
-        <Button>
+        <Button onClick={() => setSaveAlertOpen(true)}>
           <Save className="size-4" />
           수집 데이터 저장
         </Button>
@@ -394,9 +393,23 @@ export function ReferenceBuilderPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDeleteSlot(deleteTarget!)}>
+            <AlertDialogAction onClick={handleDeleteSlot}>
               확인
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 저장 확인 다이얼로그 */}
+      <AlertDialog open={saveAlertOpen} onOpenChange={setSaveAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>저장</AlertDialogTitle>
+            <AlertDialogDescription>저장하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction>확인</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

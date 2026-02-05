@@ -99,35 +99,15 @@ export function SpotEditorPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [currentImage, setCurrentImage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [saveAlertOpen, setSaveAlertOpen] = useState(false);
   const totalImages = 15;
   const detectedCars = 5;
 
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
 
-  const handleJsonDownload = () => {
-    console.log("JSON 다운로드");
-  };
-
-  const handleDeleteAll = () => {
-    console.log("전체 삭제");
-  };
-
-  const handleSaveToServer = () => {
-    console.log("서버에 저장");
-  };
-
-  const handleDeleteSlot = (slotId: string) => {
-    console.log("슬롯 삭제:", slotId);
+  const handleDeleteSlot = () => {
     setDeleteTarget(null);
-  };
-
-  const handleAddSpot = () => {
-    console.log("현재 위치에 SPOT 추가");
-  };
-
-  const handleResetFromRoi = () => {
-    console.log("ROI에서 초기화");
   };
 
   const handleRunTest = () => {
@@ -172,17 +152,17 @@ export function SpotEditorPage() {
           </Select>
         </div>
 
-        <Button variant="outline" onClick={handleJsonDownload}>
+        <Button variant="outline">
           <Download className="size-4" />
           JSON 다운로드
         </Button>
 
-        <Button variant="outline" onClick={handleDeleteAll}>
+        <Button variant="outline">
           <Trash2 className="size-4" />
           전체 삭제
         </Button>
 
-        <Button onClick={handleSaveToServer}>
+        <Button onClick={() => setSaveAlertOpen(true)}>
           <Save className="size-4" />
           서버에 저장
         </Button>
@@ -453,7 +433,6 @@ export function SpotEditorPage() {
                         <Button
                           variant="outline"
                           size="icon-lg"
-                          onClick={handleAddSpot}
                           className="bg-background/80 backdrop-blur-[1px]"
                         >
                           <CircleDot className="size-4" />
@@ -468,7 +447,6 @@ export function SpotEditorPage() {
                         <Button
                           variant="outline"
                           size="icon-lg"
-                          onClick={handleResetFromRoi}
                           className="bg-background/80 backdrop-blur-[1px]"
                         >
                           <RotateCcw className="size-4" />
@@ -586,9 +564,23 @@ export function SpotEditorPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDeleteSlot(deleteTarget!)}>
+            <AlertDialogAction onClick={handleDeleteSlot}>
               확인
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 저장 확인 다이얼로그 */}
+      <AlertDialog open={saveAlertOpen} onOpenChange={setSaveAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>저장</AlertDialogTitle>
+            <AlertDialogDescription>저장하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction>확인</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

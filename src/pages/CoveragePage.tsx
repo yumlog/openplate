@@ -19,6 +19,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import cctvImage from "@/assets/cctv.jpg";
 import MapSvg from "@/assets/map.svg?react";
 
@@ -41,6 +51,7 @@ export function CoveragePage() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isMapDragging, setIsMapDragging] = useState(false);
   const [showUnmatched, setShowUnmatched] = useState(false);
+  const [saveAlertOpen, setSaveAlertOpen] = useState(false);
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const positionStartRef = useRef({ x: 0, y: 0 });
@@ -327,11 +338,7 @@ export function CoveragePage() {
           초기화
         </Button>
 
-        <Button
-          onClick={() =>
-            console.log("저장:", { direction1Selection, direction2Selection })
-          }
-        >
+        <Button onClick={() => setSaveAlertOpen(true)}>
           <Save className="size-4" />
           저장
         </Button>
@@ -485,6 +492,20 @@ export function CoveragePage() {
           </div>
         </div>
       </div>
+
+      {/* 저장 확인 다이얼로그 */}
+      <AlertDialog open={saveAlertOpen} onOpenChange={setSaveAlertOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>저장</AlertDialogTitle>
+            <AlertDialogDescription>저장하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
