@@ -196,6 +196,9 @@ src/
 │       ├── separator.tsx
 │       ├── slider.tsx
 │       └── tooltip.tsx
+├── constants/           # 공통 상수
+│   ├── options.ts       # floorOptions, cctvOptions
+│   └── index.ts
 ├── pages/               # 페이지 컴포넌트
 │   ├── HomePage.tsx
 │   ├── MapPage.tsx

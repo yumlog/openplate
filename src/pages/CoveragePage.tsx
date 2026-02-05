@@ -31,12 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import cctvImage from "@/assets/cctv.jpg";
 import MapSvg from "@/assets/map.svg?react";
-
-const floorOptions = [
-  { value: "b3", label: "B3" },
-  { value: "b2", label: "B2" },
-  { value: "b1", label: "B1" },
-];
+import { floorOptions } from "@/constants";
 
 export function CoveragePage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");

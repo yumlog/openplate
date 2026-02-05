@@ -32,6 +32,9 @@ src/
 │       ├── separator.tsx    # Separator 컴포넌트
 │       ├── slider.tsx       # Slider 컴포넌트
 │       └── tooltip.tsx      # Tooltip 컴포넌트
+├── constants/
+│   ├── options.ts           # 공통 상수 (floorOptions, cctvOptions)
+│   └── index.ts
 ├── lib/
 │   └── utils.ts             # 유틸리티 함수 (cn)
 ├── pages/
