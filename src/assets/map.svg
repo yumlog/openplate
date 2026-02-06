@@ -4134,16 +4134,6 @@
        stroke-width="0.5"
        data-parking-id="P392" />
     <rect
-       x="545.97601"
-       y="699"
-       width="16"
-       height="30"
-       transform="rotate(-90,545.976,699)"
-       fill="#666666"
-       stroke="#eeeeee"
-       stroke-width="0.5"
-       id="rect2" />
-    <rect
        x="870.052"
        y="680.46301"
        width="15"
