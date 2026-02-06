@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { flushSync } from "react-dom";
 import {
   Map,
-  Clock,
   LayoutGrid,
   ArrowLeft,
   ArrowRight,
@@ -28,7 +27,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: <Clock className="size-5" />, label: "타임라인", href: "/timeline" },
+  // { icon: <Clock className="size-5" />, label: "타임라인", href: "/timeline" },
   { icon: <Map className="size-5" />, label: "지도", href: "/map" },
   {
     icon: <LayoutGrid className="size-5" />,

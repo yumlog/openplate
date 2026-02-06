@@ -111,7 +111,7 @@ export function SpotEditorPage() {
         <div className="flex items-center gap-2">
           <Label>층</Label>
           <Select value={selectedFloor} onValueChange={setSelectedFloor}>
-            <SelectTrigger className="w-24">
+            <SelectTrigger className="w-26">
               <SelectValue placeholder="층 선택" />
             </SelectTrigger>
             <SelectContent>

@@ -314,7 +314,7 @@ export function MapPage() {
           <div className="flex items-center gap-2">
             <Label>층</Label>
             <Select value={floor} onValueChange={setFloor}>
-              <SelectTrigger>
+              <SelectTrigger className="w-26">
                 <SelectValue placeholder="층 선택" />
               </SelectTrigger>
               <SelectContent>
@@ -333,7 +333,7 @@ export function MapPage() {
               onValueChange={setResidentDong}
               disabled={!floor}
             >
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="w-28">
                 <SelectValue placeholder="동 선택" />
               </SelectTrigger>
               <SelectContent>
@@ -347,7 +347,7 @@ export function MapPage() {
               onValueChange={setResidentHo}
               disabled={!floor}
             >
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="w-28">
                 <SelectValue placeholder="호수 선택" />
               </SelectTrigger>
               <SelectContent>

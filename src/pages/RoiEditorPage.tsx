@@ -61,6 +61,8 @@ export function RoiEditorPage() {
   const [currentImage, setCurrentImage] = useState(1);
   const totalImages = 15;
 
+  const currentFloorLabel =
+    floorOptions.find((f) => f.value === selectedFloor)?.label || "";
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "CCTV";
 
@@ -77,7 +79,7 @@ export function RoiEditorPage() {
         <div className="flex items-center gap-2">
           <Label>층</Label>
           <Select value={selectedFloor} onValueChange={setSelectedFloor}>
-            <SelectTrigger className="w-24">
+            <SelectTrigger className="w-26">
               <SelectValue placeholder="층 선택" />
             </SelectTrigger>
             <SelectContent>
@@ -288,6 +290,8 @@ export function RoiEditorPage() {
             <>
               <div className="flex flex-col gap-1 px-4 pt-5">
                 <h3 className="flex items-center gap-2 text-base font-bold text-foreground leading-tight">
+                  {currentFloorLabel}
+                  <Separator orientation="vertical" className="h-3" />
                   {currentCctvLabel}
                   <Separator orientation="vertical" className="h-3" />
                   방향{selectedDirection} (
