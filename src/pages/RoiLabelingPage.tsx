@@ -486,24 +486,26 @@ export function RoiLabelingPage() {
                   ))}
                 </svg>
 
-                {/* 우측 상단 컨트롤 버튼 */}
+                {/* 우측 하단 컨트롤 버튼 */}
                 <TooltipProvider delayDuration={0}>
                   <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
-                          variant={isDrawing ? "default" : "outline"}
-                          size="icon-lg"
-                          className={
-                            isDrawing
-                              ? ""
-                              : "bg-background/80 backdrop-blur-[1px]"
-                          }
-                          onClick={startDrawing}
-                          disabled={isDrawing || !selectedSlot}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
+                        <span>
+                          <Button
+                            variant={isDrawing ? "default" : "outline"}
+                            size="icon-lg"
+                            className={
+                              isDrawing
+                                ? ""
+                                : "bg-background/80 backdrop-blur-[1px]"
+                            }
+                            onClick={startDrawing}
+                            disabled={isDrawing || !selectedSlot}
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                        </span>
                       </TooltipTrigger>
                       <TooltipContent position="left">
                         새 ROI 그리기
@@ -511,15 +513,17 @@ export function RoiLabelingPage() {
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon-lg"
-                          className="bg-background/80 backdrop-blur-[1px]"
-                          onClick={cancelDrawing}
-                          disabled={!isDrawing}
-                        >
-                          <PencilOff className="size-4" />
-                        </Button>
+                        <span>
+                          <Button
+                            variant="outline"
+                            size="icon-lg"
+                            className="bg-background/80 backdrop-blur-[1px]"
+                            onClick={cancelDrawing}
+                            disabled={!isDrawing}
+                          >
+                            <PencilOff className="size-4" />
+                          </Button>
+                        </span>
                       </TooltipTrigger>
                       <TooltipContent position="left">
                         그리기 취소
@@ -527,35 +531,39 @@ export function RoiLabelingPage() {
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon-lg"
-                          className="bg-background/80 backdrop-blur-[1px]"
-                          onClick={undoLastPoint}
-                          disabled={!isDrawing || drawingPoints.length === 0}
-                        >
-                          <Undo2 className="size-4" />
-                        </Button>
+                        <span>
+                          <Button
+                            variant="outline"
+                            size="icon-lg"
+                            className="bg-background/80 backdrop-blur-[1px]"
+                            onClick={undoLastPoint}
+                            disabled={!isDrawing || drawingPoints.length === 0}
+                          >
+                            <Undo2 className="size-4" />
+                          </Button>
+                        </span>
                       </TooltipTrigger>
                       <TooltipContent position="left">점 취소</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon-lg"
-                          className="bg-background/80 backdrop-blur-[1px]"
-                          onClick={deleteRoi}
-                          disabled={
-                            drawingPoints.length === 0 &&
-                            !(
-                              selectedSlot &&
-                              currentDirectionSlots[selectedSlot]
-                            )
-                          }
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <span>
+                          <Button
+                            variant="outline"
+                            size="icon-lg"
+                            className="bg-background/80 backdrop-blur-[1px]"
+                            onClick={deleteRoi}
+                            disabled={
+                              drawingPoints.length === 0 &&
+                              !(
+                                selectedSlot &&
+                                currentDirectionSlots[selectedSlot]
+                              )
+                            }
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </span>
                       </TooltipTrigger>
                       <TooltipContent position="left">ROI 삭제</TooltipContent>
                     </Tooltip>

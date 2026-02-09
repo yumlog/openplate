@@ -507,7 +507,7 @@ export function MapPage() {
                   </div>
                 )}
 
-                {/* 우측 상단 컨트롤 */}
+                {/* 우측 하단 컨트롤 */}
                 <div className="absolute right-4 bottom-5 flex flex-col items-end gap-1">
                   <Button
                     variant="outline"
