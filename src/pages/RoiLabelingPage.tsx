@@ -397,7 +397,7 @@ export function RoiLabelingPage() {
                         .roi-point-pulse {
                           transform-origin: center;
                           transform-box: fill-box;
-                          animation: pulse 1s ease-in-out infinite;
+                          animation: popIn 0.25s ease-out, pulse 1s ease-in-out 0.25s infinite;
                         }
                         .roi-marching {
                           stroke-dasharray: 8 8;
@@ -472,18 +472,23 @@ export function RoiLabelingPage() {
                     />
                   )}
                   {/* 현재 그리는 중인 꼭지점 원 */}
-                  {drawingPoints.map((point, index) => (
-                    <circle
-                      key={`drawing-${index}-${point.x}-${point.y}`}
-                      className={`roi-point ${isDrawing && index === drawingPoints.length - 1 ? "roi-point-pulse" : ""}`}
-                      cx={point.x}
-                      cy={point.y}
-                      r="6"
-                      fill="#262626"
-                      stroke="#a3ff05"
-                      strokeWidth="2"
-                    />
-                  ))}
+                  {drawingPoints.map((point, index) => {
+                    const isLastPoint = index === drawingPoints.length - 1;
+                    return (
+                      <circle
+                        key={`drawing-${index}-${point.x}-${point.y}`}
+                        className={
+                          isLastPoint ? "roi-point roi-point-pulse" : undefined
+                        }
+                        cx={point.x}
+                        cy={point.y}
+                        r="6"
+                        fill="#262626"
+                        stroke="#a3ff05"
+                        strokeWidth="2"
+                      />
+                    );
+                  })}
                 </svg>
 
                 {/* 우측 하단 컨트롤 버튼 */}
