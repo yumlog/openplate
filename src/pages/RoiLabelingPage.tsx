@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, MouseEvent } from "react";
 import { format } from "date-fns";
 import {
   Save,
@@ -58,14 +58,12 @@ const parkingSlots = [
   "P237",
 ];
 
-const dummyPoints = [
-  { label: "P1", x: 364, y: 353 },
-  { label: "P2", x: 296, y: 272 },
-  { label: "P3", x: 677, y: 220 },
-  { label: "P4", x: 776, y: 302 },
-];
-
 const now = new Date();
+
+interface Point {
+  x: number;
+  y: number;
+}
 
 export function RoiLabelingPage() {
   const [selectedFloor, setSelectedFloor] = useState("b1");
@@ -76,10 +74,122 @@ export function RoiLabelingPage() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [saveAlertOpen, setSaveAlertOpen] = useState(false);
 
+  // ROI 그리기 관련 상태
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawingPoints, setDrawingPoints] = useState<Point[]>([]);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  // 주차칸별 완료 상태 (방향 -> 주차칸 ID -> ROI 좌표)
+  const [completedSlots, setCompletedSlots] = useState<
+    Record<1 | 2, Record<string, Point[]>>
+  >({ 1: {}, 2: {} });
+
+  // 현재 방향의 완료된 슬롯
+  const currentDirectionSlots = completedSlots[selectedDirection];
+
   const currentFloorLabel =
     floorOptions.find((f) => f.value === selectedFloor)?.label || "";
   const currentCctvLabel =
     cctvOptions.find((c) => c.value === selectedCctv)?.label || "";
+
+  // 이미지 클릭 핸들러 - 꼭지점 추가
+  const handleImageClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDrawing) return;
+
+    // 버튼 클릭 시 점이 생성되지 않도록 체크
+    const target = e.target as HTMLElement;
+    if (target.closest("button")) return;
+
+    const container = imageContainerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    const containerHeight = rect.height;
+    const halfHeight = containerHeight / 2;
+
+    // 방향에 따라 클릭 영역 제한 (방향1: 상단, 방향2: 하단)
+    const isOutOfBounds =
+      (selectedDirection === 1 && y > halfHeight) ||
+      (selectedDirection === 2 && y < halfHeight);
+    if (isOutOfBounds) return;
+
+    const newPoints = [...drawingPoints, { x, y }];
+    setDrawingPoints(newPoints);
+
+    // 4개 점이 모두 찍히면 ROI 완성
+    if (newPoints.length === 4) {
+      setDrawingPoints([]);
+      setIsDrawing(false);
+
+      // 선택된 주차칸이 있으면 완료 상태로 저장
+      if (selectedSlot) {
+        setCompletedSlots((prev) => ({
+          ...prev,
+          [selectedDirection]: {
+            ...prev[selectedDirection],
+            [selectedSlot]: newPoints,
+          },
+        }));
+      }
+    }
+  };
+
+  // 새 ROI 그리기 시작
+  const startDrawing = () => {
+    setIsDrawing(true);
+    setDrawingPoints([]);
+  };
+
+  // 그리기 취소
+  const cancelDrawing = () => {
+    setIsDrawing(false);
+    setDrawingPoints([]);
+  };
+
+  // 마지막 점 취소
+  const undoLastPoint = () => setDrawingPoints(drawingPoints.slice(0, -1));
+
+  // ROI 삭제
+  const deleteRoi = () => {
+    // 그리는 중이면 그리기 취소
+    if (isDrawing || drawingPoints.length > 0) {
+      setDrawingPoints([]);
+      setIsDrawing(false);
+      return;
+    }
+    // 선택된 주차칸의 ROI 삭제
+    if (selectedSlot && currentDirectionSlots[selectedSlot]) {
+      setCompletedSlots((prev) => {
+        const newDirectionSlots = { ...prev[selectedDirection] };
+        delete newDirectionSlots[selectedSlot];
+        return {
+          ...prev,
+          [selectedDirection]: newDirectionSlots,
+        };
+      });
+    }
+  };
+
+  // 주차칸 완료 여부 확인
+  const isSlotCompleted = (slot: string) =>
+    completedSlots[1][slot] || completedSlots[2][slot];
+
+  // 현재 표시할 포인트 (그리는 중이면 drawingPoints, 선택된 주차칸이 있으면 해당 ROI)
+  const displayPoints =
+    drawingPoints.length > 0
+      ? drawingPoints
+      : (selectedSlot && currentDirectionSlots[selectedSlot]) || [];
+
+  // 진행률 계산 (양 방향 합산, 중복 제거)
+  const completedCount = parkingSlots.filter(isSlotCompleted).length;
+  const totalCount = parkingSlots.length;
+  const progressPercent = Math.round((completedCount / totalCount) * 100);
+
+  // SVG 폴리곤 포인트 문자열 생성
+  const getPolygonPoints = (points: Point[]) =>
+    points.map((p) => `${p.x},${p.y}`).join(" ");
 
   return (
     <div className="flex h-full flex-col gap-5">
@@ -180,11 +290,13 @@ export function RoiLabelingPage() {
                       className={`w-full h-auto justify-between p-0 hover:bg-transparent ${selectedSlot === slot ? "text-primary" : "text-secondary-foreground"}`}
                     >
                       <span className="font-bold tabular-nums">{slot}</span>
-                      {slot === "P230" ? (
-                        <Badge variant="secondary">완료</Badge>
-                      ) : (
-                        <Badge variant="outline">미완료</Badge>
-                      )}
+                      <Badge
+                        variant={
+                          isSlotCompleted(slot) ? "secondary" : "outline"
+                        }
+                      >
+                        {isSlotCompleted(slot) ? "완료" : "미완료"}
+                      </Badge>
                     </Button>
                   ))}
                 </div>
@@ -212,27 +324,167 @@ export function RoiLabelingPage() {
                     <Separator orientation="vertical" className="h-3" />
                     방향{selectedDirection} (
                     {selectedDirection === 1 ? "상단" : "하단"})
+                    {selectedSlot && (
+                      <>
+                        <Separator orientation="vertical" className="h-3" />
+                        <span className="text-primary">{selectedSlot}</span>
+                      </>
+                    )}
                   </h3>
                   <span className="text-sm text-muted-foreground tabular-nums leading-tight">
                     {format(now, "HH:mm:ss")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Progress value={25} className="w-32" />
+                  <Progress value={progressPercent} className="w-32" />
                   <span className="text-sm text-muted-foreground whitespace-nowrap">
-                    0/615 완료(0%)
+                    {completedCount}/{totalCount} 완료 ({progressPercent}%)
                   </span>
                 </div>
               </div>
 
               {/* 이미지 컨테이너 */}
-              <div className="relative flex-1 overflow-hidden">
+              <div
+                ref={imageContainerRef}
+                className={`relative flex-1 overflow-hidden ${isDrawing ? "cursor-crosshair" : ""}`}
+                onClick={handleImageClick}
+              >
                 {/* CCTV 이미지 */}
                 <img
                   src={cctvImage}
                   alt="CCTV"
-                  className="h-full w-full object-contain"
+                  className="h-full w-full object-contain pointer-events-none"
                 />
+
+                {/* 방향에 따른 블러 오버레이 */}
+                <div
+                  className="absolute inset-x-0 top-0 bottom-1/2 pointer-events-none transition-all duration-300"
+                  style={{
+                    backdropFilter:
+                      selectedDirection === 2 ? "blur(4px)" : "blur(0px)",
+                  }}
+                />
+                <div
+                  className="absolute inset-x-0 top-1/2 bottom-0 pointer-events-none transition-all duration-300"
+                  style={{
+                    backdropFilter:
+                      selectedDirection === 1 ? "blur(4px)" : "blur(0px)",
+                  }}
+                />
+
+                {/* ROI 오버레이 SVG */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                  <defs>
+                    <style>
+                      {`
+                        @keyframes popIn {
+                          0% { transform: scale(0); opacity: 0; }
+                          50% { transform: scale(1.3); }
+                          100% { transform: scale(1); opacity: 1; }
+                        }
+                        @keyframes pulse {
+                          0%, 100% { transform: scale(1); }
+                          50% { transform: scale(1.2); }
+                        }
+                        @keyframes marchingAnts {
+                          to { stroke-dashoffset: -16; }
+                        }
+                        .roi-point {
+                          transform-origin: center;
+                          transform-box: fill-box;
+                          animation: popIn 0.25s ease-out forwards;
+                        }
+                        .roi-point-pulse {
+                          transform-origin: center;
+                          transform-box: fill-box;
+                          animation: pulse 1s ease-in-out infinite;
+                        }
+                        .roi-marching {
+                          stroke-dasharray: 8 8;
+                          animation: marchingAnts 1s linear infinite;
+                        }
+                        .roi-polygon-fill {
+                          transition: fill-opacity 0.2s ease-out;
+                        }
+                        .roi-polygon-stroke {
+                          transition: stroke-width 0.2s ease-out;
+                        }
+                        .roi-circle {
+                          transition: r 0.2s ease-out, stroke-width 0.2s ease-out;
+                        }
+                      `}
+                    </style>
+                  </defs>
+
+                  {/* 현재 방향의 완료된 ROI 표시 */}
+                  {Object.entries(currentDirectionSlots).map(
+                    ([slotId, points]) => {
+                      const isSelected = selectedSlot === slotId;
+                      return (
+                        <g
+                          key={slotId}
+                          className="cursor-pointer"
+                          style={{ pointerEvents: isDrawing ? "none" : "auto" }}
+                          onClick={() => setSelectedSlot(slotId)}
+                        >
+                          <polygon
+                            className="roi-polygon-fill"
+                            points={getPolygonPoints(points)}
+                            fill="#a3ff05"
+                            fillOpacity={isSelected ? "0.5" : "0.25"}
+                            stroke="none"
+                          />
+                          <polygon
+                            className={`roi-polygon-stroke ${isSelected ? "roi-marching" : ""}`}
+                            points={getPolygonPoints(points)}
+                            fill="none"
+                            stroke="#a3ff05"
+                            strokeWidth={isSelected ? "2" : "1"}
+                            strokeLinejoin="round"
+                          />
+                          {points.map((point, index) => (
+                            <circle
+                              className="roi-circle"
+                              key={`${slotId}-${index}`}
+                              cx={point.x}
+                              cy={point.y}
+                              r={isSelected ? 6 : 4}
+                              fill="#262626"
+                              stroke="#a3ff05"
+                              strokeWidth={isSelected ? 2 : 1}
+                            />
+                          ))}
+                        </g>
+                      );
+                    },
+                  )}
+
+                  {/* 현재 그리는 중인 폴리라인 (4점 미만) */}
+                  {drawingPoints.length >= 2 && (
+                    <polyline
+                      key={drawingPoints.length}
+                      className="roi-marching"
+                      points={getPolygonPoints(drawingPoints)}
+                      fill="none"
+                      stroke="#a3ff05"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                  {/* 현재 그리는 중인 꼭지점 원 */}
+                  {drawingPoints.map((point, index) => (
+                    <circle
+                      key={`drawing-${index}-${point.x}-${point.y}`}
+                      className={`roi-point ${isDrawing && index === drawingPoints.length - 1 ? "roi-point-pulse" : ""}`}
+                      cx={point.x}
+                      cy={point.y}
+                      r="6"
+                      fill="#262626"
+                      stroke="#a3ff05"
+                      strokeWidth="2"
+                    />
+                  ))}
+                </svg>
 
                 {/* 우측 상단 컨트롤 버튼 */}
                 <TooltipProvider delayDuration={0}>
@@ -240,9 +492,15 @@ export function RoiLabelingPage() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="outline"
+                          variant={isDrawing ? "default" : "outline"}
                           size="icon-lg"
-                          className="bg-background/80 backdrop-blur-[1px]"
+                          className={
+                            isDrawing
+                              ? ""
+                              : "bg-background/80 backdrop-blur-[1px]"
+                          }
+                          onClick={startDrawing}
+                          disabled={isDrawing || !selectedSlot}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -257,6 +515,8 @@ export function RoiLabelingPage() {
                           variant="outline"
                           size="icon-lg"
                           className="bg-background/80 backdrop-blur-[1px]"
+                          onClick={cancelDrawing}
+                          disabled={!isDrawing}
                         >
                           <PencilOff className="size-4" />
                         </Button>
@@ -271,6 +531,8 @@ export function RoiLabelingPage() {
                           variant="outline"
                           size="icon-lg"
                           className="bg-background/80 backdrop-blur-[1px]"
+                          onClick={undoLastPoint}
+                          disabled={!isDrawing || drawingPoints.length === 0}
                         >
                           <Undo2 className="size-4" />
                         </Button>
@@ -283,6 +545,14 @@ export function RoiLabelingPage() {
                           variant="outline"
                           size="icon-lg"
                           className="bg-background/80 backdrop-blur-[1px]"
+                          onClick={deleteRoi}
+                          disabled={
+                            drawingPoints.length === 0 &&
+                            !(
+                              selectedSlot &&
+                              currentDirectionSlots[selectedSlot]
+                            )
+                          }
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -333,19 +603,30 @@ export function RoiLabelingPage() {
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                     <Crosshair className="size-3" />
                     <span>현재 ROI 좌표</span>
+                    {isDrawing && (
+                      <span className="text-muted-foreground">
+                        ({displayPoints.length}/4)
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    {dummyPoints.map((point) => (
-                      <div
-                        key={point.label}
-                        className="flex items-center gap-1 text-xs text-foreground tabular-nums"
-                      >
-                        <span className="font-medium">{point.label}:</span>
-                        <span className="text-muted-foreground">
-                          {point.x}, {point.y}
-                        </span>
-                      </div>
-                    ))}
+                    {displayPoints.length > 0 ? (
+                      displayPoints.map((point, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-1 text-xs text-foreground tabular-nums"
+                        >
+                          <span className="font-medium">P{index + 1}:</span>
+                          <span className="text-muted-foreground">
+                            {point.x}, {point.y}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        {isDrawing ? "이미지를 클릭하세요" : "ROI가 없습니다"}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
