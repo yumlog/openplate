@@ -176,15 +176,12 @@ export function MapPage() {
       el.addEventListener("mouseleave", handleMouseLeave);
     });
 
-    // CCTV 요소 클릭 이벤트 (inkscape:label이 "ID xxx" 형식인 요소)
-    const cctvElements = svgElement.querySelectorAll(
-      "[inkscape\\:label^='ID ']",
-    );
+    // CCTV 요소 클릭 이벤트 (data-cctv-id 속성이 있는 요소)
+    const cctvElements = svgElement.querySelectorAll("[data-cctv-id]");
     const handleCctvClick = (e: Event) => {
       const target = e.currentTarget as Element;
-      const label = target.getAttribute("inkscape:label");
-      if (label) {
-        const cctvId = label.replace("ID ", "");
+      const cctvId = target.getAttribute("data-cctv-id");
+      if (cctvId) {
         setSelectedCctv(cctvId);
         setCctvModalOpen(true);
       }

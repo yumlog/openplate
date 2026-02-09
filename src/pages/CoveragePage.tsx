@@ -66,11 +66,9 @@ export function CoveragePage() {
     const svg = getSvg();
     if (!svg) return;
 
-    const options = Array.from(
-      svg.querySelectorAll("[inkscape\\:label^='ID ']"),
-    )
+    const options = Array.from(svg.querySelectorAll("[data-cctv-id]"))
       .map((el) => {
-        const id = el.getAttribute("inkscape:label")?.replace("ID ", "") || "";
+        const id = el.getAttribute("data-cctv-id") || "";
         return { value: id, label: `CCTV ${id}` };
       })
       .sort((a, b) => parseInt(a.value) - parseInt(b.value));
@@ -85,7 +83,7 @@ export function CoveragePage() {
     const svgContainer = svgContainerRef.current;
     const container = mapContainerRef.current;
     const cctvEl = svgContainer?.querySelector(
-      `[inkscape\\:label="ID ${selectedCctv}"]`,
+      `[data-cctv-id="${selectedCctv}"]`,
     );
 
     if (!cctvEl || !container || !svgContainer) return;
